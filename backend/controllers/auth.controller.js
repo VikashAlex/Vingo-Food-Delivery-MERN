@@ -32,7 +32,7 @@ export const signup = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true
         })
-        return res.status(201).json({ success: true, message: "Sign-up Successfully.", token })
+        return res.status(201).json({ success: true, message: "Sign-up Successfully.", token,user })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: "Sign-up Error.", error })
@@ -67,7 +67,7 @@ export const signIn = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true
         })
-        return res.status(201).json({ success: true, message: "Sign-In Successfully.", token })
+        return res.status(201).json({ success: true, message: "Sign-In Successfully.", token,user })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: "Sign-In Error.", error })
@@ -168,7 +168,7 @@ export const signupWithGoogle = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true
         })
-        return res.status(201).json({ success: true, message: "Sign-up Successfully.", token })
+        return res.status(201).json({ success: true, message: "Sign-up Successfully.", token,user })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: "Sign-up Error.", error })
@@ -188,7 +188,7 @@ export const signinWithGoogle = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true
         })
-        return res.status(201).json({ success: true, message: "Sign-In Successfully.", token })
+        return res.status(201).json({ success: true, message: "Sign-In Successfully.", token,user })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Sign-In Error.", error })
     }

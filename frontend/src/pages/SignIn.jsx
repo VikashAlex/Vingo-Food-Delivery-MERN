@@ -6,9 +6,12 @@ import { AxiosInstance } from '../utils/helper.js';
 import { toast } from 'react-toastify';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../utils/firebase.js';
+import { useDispatch } from 'react-redux';
+import { setUserData } from '../redux/userSlice.js';
 
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
+  const dispatcher  = useDispatch()
   const [forminfo, setForminfo] = useState({
     email: "",
     password: ""
@@ -17,6 +20,7 @@ function SignIn() {
   const sumbitHandel = () => {
     AxiosInstance.post('/api/auth/signin', forminfo).then((res) => {
       if (res.data.success) {
+        dispatcher(setUserData(res.data.user))
         toast.success(res.data.message);
         setForminfo({
           email: "",
@@ -35,7 +39,7 @@ function SignIn() {
       email: result.user.email,
     }).then((res) => {
       if (res.data.success) {
-        console.log(res.data)
+        dispatcher(setUserData(res.data.user))
         toast.success(res.data.message);
       }
     }).catch((error) => {

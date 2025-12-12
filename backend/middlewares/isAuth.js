@@ -10,7 +10,7 @@ const isAuth = async (req, res, next) => {
         if (!verifyToken) {
             return res.status(400).json({ success: false, message: "token not verify." })
         }
-        req.userId = verifyToken
+        req.userId = verifyToken.userId
         next()
     } catch (error) {
         return res.status(500).json({ success: false, message: "isAuth error." })
