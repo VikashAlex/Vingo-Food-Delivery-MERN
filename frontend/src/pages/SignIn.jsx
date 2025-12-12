@@ -4,6 +4,8 @@ import { FcGoogle } from "react-icons/fc";
 import { Link } from 'react-router';
 import { AxiosInstance } from '../utils/helper.js';
 import { toast } from 'react-toastify';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../utils/firebase.js';
 
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
@@ -22,6 +24,22 @@ function SignIn() {
         })
       }
     }).catch((error) => {
+      toast.warning(error.response.data.message);
+    })
+  }
+
+  const handleGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider)
+    AxiosInstance.post('/api/auth/signin-google', {
+      email: result.user.email,
+    }).then((res) => {
+      if (res.data.success) {
+        console.log(res.data)
+        toast.success(res.data.message);
+      }
+    }).catch((error) => {
+      console.log(error)
       toast.warning(error.response.data.message);
     })
   }
@@ -56,7 +74,7 @@ function SignIn() {
         {/* Sign In Btn */}
         <button onClick={sumbitHandel} className='mb-4 w-full font-semibold bg-[#ff4d2d] hover:bg-[#e64323] cursor-pointer text-white  py-2 rounded-lg border transition duration-200'>Sign In</button>
         {/* Sign In with Google */}
-        <button className='mb-6 w-full flex justify-center items-center gap-2 px-4 py-2 rounded-lg transition duration-200 border border-[#ddd] hover:bg-gray-200 cursor-pointer'>
+        <button onClick={handleGoogle} className='mb-6 w-full flex justify-center items-center gap-2 px-4 py-2 rounded-lg transition duration-200 border border-[#ddd] hover:bg-gray-200 cursor-pointer'>
           <FcGoogle size={20} />
           <span>Sign In with Google</span>
         </button>
