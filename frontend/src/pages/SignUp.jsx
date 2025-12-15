@@ -63,7 +63,7 @@ function SignUp() {
             }
         }).catch((error) => {
             console.log(error)
-            toast.warning(error.response.data.message);
+            toast.warning(error?.response?.data?.message);
         })
     }
     return (

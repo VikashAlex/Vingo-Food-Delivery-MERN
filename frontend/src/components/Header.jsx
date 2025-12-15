@@ -8,15 +8,17 @@ import { useState } from "react";
 import { AxiosInstance } from "../utils/helper";
 import { setUserData } from "../redux/userSlice";
 import { toast } from "react-toastify";
+import { IoReceiptOutline } from "react-icons/io5";
+import { FaPlus } from "react-icons/fa";
 function Header() {
     const { userData } = useSelector((state) => state.user)
     const { cityData } = useSelector((state) => state.user)
+    const { shopData } = useSelector((state) => state.owner)
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
     const dispatcher = useDispatch()
     const signOutHandel = () => {
         AxiosInstance('/api/auth/signout').then((res) => {
-           
             if (res.data.success) {
                 dispatcher(setUserData(null))
                 toast.success(res.data.message)
@@ -26,9 +28,9 @@ function Header() {
         })
     }
     return (
-        <header className="w-full h-20 flex items-center justify-between md:justify-center gap-[30px] px-5 fixed top-0 z-50 bg-[#fff9f6] overflow-visible">
+        <header className="w-full h-20 flex items-center justify-between  md:justify-center gap-[30px] px-5 fixed top-0 z-50 bg-[#fff9f6] overflow-visible">
             <h1 className="text-xl font-bold mb-2 text-[#ff4d2d]">Vingo</h1>
-            <div className="md:w-[60%] lg:w-[40%] h-[55px] bg-white shadow-lg rounded-lg hidden md:flex items-center gap-5">
+            {userData.role == "user" && <div className="md:w-[60%] lg:w-[40%] h-[55px] bg-white shadow-lg rounded-lg hidden md:flex items-center gap-5">
                 <div className="hidden md:flex items-center w-[30%] overflow-hidden gap-2.5 px-2.5 border-r-2 border-gray-400">
                     <FaLocationDot size={25} color="#ff4d2d" />
                     <div className="w-[80%] truncate text-gray-600">{cityData?.city || "india"}</div>
@@ -37,9 +39,9 @@ function Header() {
                     <FaSearch size={25} color="#ff4d2d" />
                     <input type="text" placeholder="Search delicious food..." className="px-2.5 text-gray-700 outline-0 w-full" />
                 </div>
-            </div>
+            </div>}
             {
-                showSearch &&
+                userData.role == "user" && showSearch &&
                 <div className="w-[90%] md:hidden  h-[55px] bg-white shadow-lg rounded-lg flex items-center gap-5 fixed top-20">
                     <div className="flex items-center w-[30%] overflow-hidden gap-2.5 px-2.5 border-r-2 border-gray-400">
                         <FaLocationDot size={25} color="#ff4d2d" />
@@ -52,24 +54,50 @@ function Header() {
                 </div>
             }
 
-            <div className="flex items-center gap-4">
-                {
-                    showSearch
-                        ?
-                        <RxCross2 size={30} color="#ff4d2d" className="md:hidden" onClick={() => setShowSearch(false)} />
-                        :
-                        <CiSearch size={30} color="#ff4d2d" className="md:hidden" onClick={() => setShowSearch(true)} />
+
+            <div className="flex items-center gap-4 ">
+                {userData.role == "user" ?
+                    <>
+                        {showSearch
+                            ?
+                            <RxCross2 size={30} color="#ff4d2d" className="md:hidden" onClick={() => setShowSearch(false)} />
+                            :
+                            <CiSearch size={30} color="#ff4d2d" className="md:hidden" onClick={() => setShowSearch(true)} />
+                        }
+                        <div className="relative cursor-pointer">
+                            <FiShoppingCart size={25} color='#ff4d2d' />
+                            <span className="absolute text-[#ff4d2d] -top-3 right-[-9px]">0</span>
+                        </div>
+                        <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium">
+                            My Orders
+                        </button>
+
+                    </>
+                    :
+                    <>
+                        <div className="flex items-center gap-4">
+                            {shopData && <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] md:text-sm font-medium">
+                                <FaPlus size={20} />
+                                <p className="md:block hidden">Add Items</p>
+                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">0</span>
+
+                            </button>
+                            }
+                            <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
+                                <IoReceiptOutline size={20} />
+
+                                <p className="md:block hidden">My Orders</p>
+                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">0</span>
+                            </button>
+                        </div>
+                    </>
                 }
-                <div className="relative cursor-pointer">
-                    <FiShoppingCart size={25} color='#ff4d2d' />
-                    <span className="absolute text-[#ff4d2d] -top-3 right-[-9px]">0</span>
-                </div>
-                <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium">
-                    My Orders
-                </button>
+
+
                 <div onClick={() => setShowInfo(prev => !prev)} className="w-10 h-10 rounded-full bg-[#ff4d2d] flex items-center justify-center text-white text-[18px] font-semibold cursor-pointer">
                     {userData?.fullName?.slice(0, 1)}
                 </div>
+
 
                 {
                     showInfo
@@ -77,7 +105,7 @@ function Header() {
                     <div className="fixed top-20 right-[10%] lg:right-[25%] w-[180px] bg-white shadow-2xl rounded-xl p-4 flex flex-col font-semibold">
                         <div className="text-[14px]">{userData?.fullName}</div>
                         <div className="md:hidden">My Orders</div>
-                        <div  onClick={signOutHandel} className="text-[#ff4d2d] cursor-pointer">log out</div>
+                        <div onClick={signOutHandel} className="text-[#ff4d2d] cursor-pointer">log out</div>
                     </div>
                 }
             </div>

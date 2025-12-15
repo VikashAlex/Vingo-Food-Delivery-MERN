@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs'
-
+import dotenv from 'dotenv'
+dotenv.config();
 const uploadonCloudinary = async (file) => {
     // Configuration
     cloudinary.config({
@@ -10,11 +11,11 @@ const uploadonCloudinary = async (file) => {
     });
     try {
         // Upload an image
-        const uploadResult = await cloudinary.uploader.upload(file)
-        fs.unlinkSync(file)
-        console.log(uploadResult)
+        const uploadResult = await cloudinary.uploader.upload(file.path)
+        fs.unlinkSync(file.path)
+        return uploadResult.secure_url
     } catch (error) {
-        fs.unlinkSync(file)
+        fs.unlinkSync(file.path)
         console.log(error)
     }
 }
