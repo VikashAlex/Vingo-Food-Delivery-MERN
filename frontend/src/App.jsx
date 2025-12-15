@@ -8,6 +8,8 @@ import Home from './pages/Home'
 import useGetCurrentCity from './hooks/useGetCurrentCity'
 import useGetMyShop from './hooks/useGetMyShop'
 import CreateEditShop from './pages/CreateEditShop'
+import AddItem from './pages/AddItem'
+import EditItem from './pages/EditItem'
 
 function App() {
   useGetCurrentUser()
@@ -21,6 +23,8 @@ function App() {
       <Route path='/forgot-password' element={userData ? <Navigate to={'/'}></Navigate> : <ForgotPassword />}></Route>
       <Route path='/' element={!userData ? <Navigate to={'/sign-in'}></Navigate> : <Home />}></Route>
       <Route path='/create-edit-shop' element={userData ? <CreateEditShop /> : <Navigate to={'/'}></Navigate>}></Route>
+      <Route path='/add-items' element={userData ? <AddItem /> : <Navigate to={'/'}></Navigate>}></Route>
+      <Route path='/edit-item/:id' element={userData ? <EditItem /> : <Navigate to={'/'}></Navigate>}></Route>
     </Routes>
   )
 }

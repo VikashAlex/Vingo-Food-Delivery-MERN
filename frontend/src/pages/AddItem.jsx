@@ -6,17 +6,29 @@ import { useState } from "react";
 import { AxiosInstance } from "../utils/helper";
 import { toast } from "react-toastify";
 import { setShopData } from "../redux/ownerSlice";
-function CreateEditShop() {
+function AddItem() {
     const navigate = useNavigate()
     const dispatcher = useDispatch()
     const { shopData } = useSelector((state) => state.owner)
-    const { cityData } = useSelector((state) => state.user)
+    const categories = [
+        "Snacks",
+        "Main Course",
+        "Desserts",
+        "Pizza",
+        "Burgers",
+        "Sandwiches",
+        "South Indain",
+        "North Indain",
+        "Chinese",
+        "Fast Food",
+        "Others"
+    ]
     const [forminfo, setForminfo] = useState({
-        shopName: shopData?.shopName || "",
-        image: shopData?.image || null,
-        state: shopData?.state || cityData?.state || "",
-        city: shopData?.city || cityData?.city || "",
-        address: shopData?.address || cityData?.address_line2 || "",
+        itemName: "",
+        image: null,
+        category: "",
+        price: "",
+        foodType: "",
     })
     const [imgUrl, setImgUrl] = useState(shopData?.image || null)
     const imagehandel = (e) => {
@@ -29,23 +41,25 @@ function CreateEditShop() {
     const sumithandel = (e) => {
         e.preventDefault()
         const formData = new FormData();
-        formData.append('shopName', forminfo.shopName)
-        formData.append('state', forminfo.state)
-        formData.append('city', forminfo.city)
-        formData.append('address', forminfo.address)
+        formData.append('itemName', forminfo.itemName)
+        formData.append('category', forminfo.category)
+        formData.append('price', forminfo.price)
+        formData.append('foodType', forminfo.foodType)
         if (forminfo.image) {
             formData.append('image', forminfo.image)
         }
-        AxiosInstance.post('api/shop/create-edit', formData).then((res) => {
+        AxiosInstance.post('api/item/item-add', formData).then((res) => {
             if (res.data.success) {
                 toast.success(res.data.message)
                 dispatcher(setShopData(res.data.shop))
+                setTimeout(() => {
+                    navigate('/')
+                }, 3000);
             }
         }).catch((err) => {
             console.log(err)
         })
     }
-    console.log(forminfo)
     return (
 
         <div className="flex justify-center flex-col items-center p-0 bg-linear-to-br from-orange-50 relative to-white min-h-screen">
@@ -61,14 +75,14 @@ function CreateEditShop() {
                         <FaUtensils className="text-[#ff4d2d] w-16 h-16" />
                     </div>
                     <div className="text-2xl font-extrabold text-gray-900">
-                        {shopData ? "Edit Shop" : "Add Shop"}
+                        Add Items
                     </div>
                 </div>
 
                 <form className="space-y-4" onSubmit={sumithandel}>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">ShopName</label>
-                        <input value={forminfo.shopName} onChange={(e) => setForminfo({ ...forminfo, shopName: e.target.value })} type="text" placeholder="Enter Shop Name" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">itemName</label>
+                        <input value={forminfo.itemName} onChange={(e) => setForminfo({ ...forminfo, itemName: e.target.value })} type="text" placeholder="Enter Item Name" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
@@ -81,17 +95,29 @@ function CreateEditShop() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                            <input onChange={(e) => setForminfo({ ...forminfo, state: e.target.value })} value={forminfo.state} type="text" placeholder="Enter State Name" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                            <input onChange={(e) => setForminfo({ ...forminfo, price: e.target.value })} value={forminfo.price} type="text" placeholder="Enter Price" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                            <input onChange={(e) => setForminfo({ ...forminfo, city: e.target.value })} value={forminfo.city} type="text" placeholder="Enter City Name" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                            <label className="block text-sm font-medium text-gray-700 mb-1">foodType</label>
+
+                            <select onChange={(e) => setForminfo({ ...forminfo, foodType: e.target.value })} value={forminfo.foodType} className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" >
+                                <option value="" disabled>Select foodType</option>
+                                <option value="veg" >veg</option>
+                                <option value="non veg" >non veg</option>
+                            </select>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                        <input onChange={(e) => setForminfo({ ...forminfo, address: e.target.value })} value={forminfo.address} type="text" placeholder="Enter Shop Address" className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Select Categories</label>
+                        <select onChange={(e) => setForminfo({ ...forminfo, category: e.target.value })} value={forminfo.category} className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" >
+                            <option value="" disabled>Select Category</option>
+                            {
+                                categories.map((value, index) => {
+                                    return <option value={value} key={index}>{value}</option>
+                                })
+                            }
+                        </select>
                     </div>
 
 
@@ -106,4 +132,4 @@ function CreateEditShop() {
     )
 }
 
-export default CreateEditShop
+export default AddItem

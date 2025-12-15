@@ -10,7 +10,9 @@ import { setUserData } from "../redux/userSlice";
 import { toast } from "react-toastify";
 import { IoReceiptOutline } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router";
 function Header() {
+    const navigate = useNavigate()
     const { userData } = useSelector((state) => state.user)
     const { cityData } = useSelector((state) => state.user)
     const { shopData } = useSelector((state) => state.owner)
@@ -76,10 +78,10 @@ function Header() {
                     :
                     <>
                         <div className="flex items-center gap-4">
-                            {shopData && <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] md:text-sm font-medium">
+                            {shopData && <button onClick={()=>navigate('/add-items')} className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] md:text-sm font-medium">
                                 <FaPlus size={20} />
                                 <p className="md:block hidden">Add Items</p>
-                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">0</span>
+                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{shopData.items.length ||  0}</span>
 
                             </button>
                             }

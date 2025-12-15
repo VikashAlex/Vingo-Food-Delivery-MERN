@@ -13,13 +13,22 @@ export const CreateEditShop = async (req, res) => {
             shop = await shopModel.create({
                 shopName, state, city, address, image, owner: req.userId,
             })
+            await shop.populate("owner")
+            return res.status(201).json({ success: true, message: "Shop Create Successfuly.", shop })
         } else {
-            shop = await shopModel.findByIdAndUpdate(shop._id, {
-                shopName, state, city, address, image, owner: req.userId,
-            }, { new: true })
+            if (image) {
+                shop = await shopModel.findByIdAndUpdate(shop._id, {
+                    shopName, state, city, address, image, owner: req.userId,
+                }, { new: true })
+            } else {
+                shop = await shopModel.findByIdAndUpdate(shop._id, {
+                    shopName, state, city, address, owner: req.userId,
+                }, { new: true })
+            }
+            await shop.populate("owner")
+            return res.status(201).json({ success: true, message: "Shop Edit Successfuly.", shop })
         }
-        await shop.populate("owner")
-        return res.status(201).json({ success: true, message: "Shop Create Successfuly.", shop })
+
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: "Shop Create Error.", error })
@@ -27,7 +36,7 @@ export const CreateEditShop = async (req, res) => {
 }
 export const GetMyShop = async (req, res) => {
     try {
-        const shop = await shopModel.findOne({ owner: req.userId }).populate('owner items');
+        const shop = await shopModel.findOne({ owner: req.userId }).populate('owner').populate('items');
         if (!shop) {
             return res.status(201).json({ success: false, message: "shop not found" })
         }
