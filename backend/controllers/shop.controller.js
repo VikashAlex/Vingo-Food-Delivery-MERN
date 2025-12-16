@@ -46,4 +46,16 @@ export const GetMyShop = async (req, res) => {
         return res.status(500).json({ success: false, message: "Shop get Error.", error })
     }
 }
-
+export const getShopInMyCity = async (req, res) => {
+    try {
+        const { city } = req.params
+        if (!city) {
+            return res.status(400).json({ success: false, message: "city not fond" })
+        }
+        const cityinMyCity = await shopModel.find({city})
+        return res.status(201).json({ success: true, message: "get shopInmycity",cityinMyCity })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Shop get Error.", error })
+    }
+}

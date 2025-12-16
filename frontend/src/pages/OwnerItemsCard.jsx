@@ -22,14 +22,14 @@ function OwnerItemsCard({ data }) {
     }
     return (
         <div className="flex bg-white rounded-lg shadow-md overflow-hidden border border-[#ff4d2d] w-full max-w-2xl">
-            <div className="w-36 h-25 shrink-0 bg-gray-50">
+            <div className="w-36 h-auto shrink-0 bg-gray-50">
                 <img src={data?.image} alt="" className="w-full h-full object-cover object-center" />
             </div>
 
             <div className="flex flex-col justify-between p-3 flex-1">
                 <div>
                     <h2 className="text-base font-semibold text-[#ff4d2d]">
-                        {data?.name}
+                        {data?.itemName}
                     </h2>
 
                     <p>

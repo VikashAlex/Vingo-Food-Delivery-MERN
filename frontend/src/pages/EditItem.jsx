@@ -75,9 +75,7 @@ function EditItem() {
             if (res.data.success) {
                 toast.success(res.data.message)
                 dispatcher(setShopData(res.data.shop))
-                setTimeout(() => {
-                    navigate('/')
-                }, 3000);
+                navigate('/')
             }
         }).catch((err) => {
             console.log(err)

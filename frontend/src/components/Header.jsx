@@ -85,12 +85,12 @@ function Header() {
 
                             </button>
                             }
-                            <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
+                            {/* <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                                 <IoReceiptOutline size={20} />
 
                                 <p className="md:block hidden">My Orders</p>
                                 <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">0</span>
-                            </button>
+                            </button> */}
                         </div>
                     </>
                 }

@@ -98,3 +98,27 @@ export const deleteItem = async (req, res) => {
     }
 
 }
+
+export const getItemInCity = async (req, res) => {
+    try {
+        const { city } = req.params
+        if (!city) {
+            return res.status(400).json({ success: false, message: "city Not Found." })
+        }
+        
+        const shop = await shopModel.find({city:city})
+        if(!shop){
+            return res.status(400).json({ success: false, message: "shop Not Found." })
+        }
+        const shopId = shop.map((shop)=>shop._id);
+
+        const items = await itemModel.find({
+            shop: { $in: shopId }
+        });
+
+        return res.status(201).json({ success: true, message: "Item get Successfuly.", items })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: "Item get Error.", error })
+    }
+}
