@@ -11,6 +11,8 @@ import CreateEditShop from './pages/CreateEditShop'
 import AddItem from './pages/AddItem'
 import EditItem from './pages/EditItem'
 import useGetShopInMyCity from './hooks/useGetShopInMyCity'
+import CartPage from './pages/CartPage'
+import Checkout from './pages/Checkout'
 
 function App() {
   useGetCurrentUser()
@@ -27,6 +29,9 @@ function App() {
       <Route path='/create-edit-shop' element={userData ? <CreateEditShop /> : <Navigate to={'/'}></Navigate>}></Route>
       <Route path='/add-items' element={userData ? <AddItem /> : <Navigate to={'/'}></Navigate>}></Route>
       <Route path='/edit-item/:id' element={userData ? <EditItem /> : <Navigate to={'/'}></Navigate>}></Route>
+      <Route path='/cart' element={userData ? <CartPage /> : <Navigate to={'/'}></Navigate>}></Route>
+      {/* <Route path='/checkout' element={userData ? <Checkout /> : <Navigate to={'/'}></Navigate>}></Route> */}
+      <Route path='/checkout' element={ <Checkout />}></Route>
     </Routes>
   )
 }

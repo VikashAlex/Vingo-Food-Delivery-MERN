@@ -7,22 +7,24 @@ function useGetShopInMyCity() {
     const dispatcher = useDispatch()
     const { cityData } = useSelector((state) => state.user)
     useEffect(() => {
-        AxiosInstance.get(`/api/shop/getshop-mycity/${cityData?.city}`).then((res) => {
-            if (res.data.success) {
-                dispatcher(setMyCityShop(res.data.cityinMyCity))
-            }
-        }).catch((err) => {
-            console.log(err)
-        })
+        if (cityData) {
+            AxiosInstance.get(`/api/shop/getshop-mycity/${cityData?.city}`).then((res) => {
+                if (res.data.success) {
+                    dispatcher(setMyCityShop(res.data.cityinMyCity))
+                }
+            }).catch((err) => {
+                console.log(err)
+            })
 
-        AxiosInstance.get(`/api/item/getItem-Incity/${cityData?.city}`).then((res) => {
-            if (res.data.success) {
-                dispatcher(setItemData(res.data.items))
-            }
+            AxiosInstance.get(`/api/item/getItem-Incity/${cityData?.city}`).then((res) => {
+                if (res.data.success) {
+                    dispatcher(setItemData(res.data.items))
+                }
 
-        }).catch((err) => {
-            console.log(err)
-        })
+            }).catch((err) => {
+                console.log(err)
+            })
+        }
     }, [cityData])
 }
 

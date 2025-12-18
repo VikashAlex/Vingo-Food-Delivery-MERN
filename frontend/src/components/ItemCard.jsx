@@ -27,7 +27,7 @@ function ItemCard({ item }) {
 
     return (
 
-        <div className="w-[250px] rounded-2xl border-2  border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
+        <div className="md:w-[250px] w-full rounded-2xl border-2  border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
             <div className="relative w-full h-[170px] flex justify-center items-center bg-white">
                 <div className="absolute top-3 right-3 bg-white rounded-full p-1 shadow">
                     {item.foodType === "veg" ? (
@@ -53,12 +53,12 @@ function ItemCard({ item }) {
                 }
             </div>
 
-            <div className="flex items-center justify-between mt-auto  p-3 gap-4">
-                <span className="font-bold text-gray-900 text-lg">
+            <div className=" md:flex items-center justify-between mt-auto  p-3 gap-4">
+                <span className="font-bold text-gray-900 text-lg md:inline block">
                     {formatINRCurrency(item.price || 0)}
                 </span>
 
-                <div className="flex items-center border rounded-full overflow-hidden shadow-sm">
+                <div className="inline-flex md:flex items-center md:mt-0 mt-2 border rounded-full overflow-hidden shadow-sm">
                     <button onClick={() => qntyhandel("-")} className="px-2 py-1 hover:bg-gray-100 transition">
                         <FaMinus size={12} />
                     </button>
@@ -69,16 +69,19 @@ function ItemCard({ item }) {
                         <FaPlus size={12} />
                     </button>
 
-                    <div onClick={() => dispatcher(addToCart({
-                        id: item._id,
-                        itemName: item.itemName,
-                        shop: item.shop,
-                        price: item.price,
-                        qnty,
-                        image: item.image,
-                        foodType: item.foodType,
-                    }))}
-                        className={`${cartItems.some((i) => i.id == item._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white px-3 py-2 flex justify-center items-center`}>
+                    <div onClick={() => {
+                        qnty > 0 && dispatcher(addToCart({
+                            id: item._id,
+                            itemName: item.itemName,
+                            shop: item.shop,
+                            price: item.price,
+                            qnty,
+                            image: item.image,
+                            foodType: item.foodType,
+                        }))
+                    }
+                    }
+                        className={`${cartItems.some((i) => i.id == item._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white px-3  py-2 flex justify-center items-center`}>
                         <FaShoppingCart />
                     </div>
                 </div>

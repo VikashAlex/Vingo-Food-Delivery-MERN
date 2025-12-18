@@ -97,7 +97,7 @@ function UserDashboard() {
                     }
 
                     <div className="w-full flex overflow-x-hidden gap-4 pb-2  scroll-smooth" ref={currentShopScrollRef}>
-                        {myCityShop.map((shop, index) => (
+                        {myCityShop?.map((shop, index) => (
                             <ShopCard shop={shop} key={index} />
                         ))}
                     </div>
@@ -121,8 +121,8 @@ function UserDashboard() {
                         </button>
                     }
 
-                    <div className="w-full flex overflow-x-hidden gap-4 pb-2  scroll-smooth" ref={currentShopScrollRef}>
-                        {itemData.map((item, index) => (
+                    <div className="w-full flex flex-wrap justify-center md:justify-items-start  overflow-x-hidden gap-4 pb-2  scroll-smooth" ref={currentShopScrollRef}>
+                        {itemData?.map((item, index) => (
                             <ItemCard item={item} key={index} />
                         ))}
                     </div>

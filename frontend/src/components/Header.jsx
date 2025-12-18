@@ -8,13 +8,13 @@ import { useState } from "react";
 import { AxiosInstance } from "../utils/helper";
 import { setUserData } from "../redux/userSlice";
 import { toast } from "react-toastify";
-import { IoReceiptOutline } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router";
 function Header() {
     const navigate = useNavigate()
     const { userData } = useSelector((state) => state.user)
     const { cityData } = useSelector((state) => state.user)
+    const { cartItems } = useSelector((state) => state.user)
     const { shopData } = useSelector((state) => state.owner)
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
@@ -66,9 +66,9 @@ function Header() {
                             :
                             <CiSearch size={30} color="#ff4d2d" className="md:hidden" onClick={() => setShowSearch(true)} />
                         }
-                        <div className="relative cursor-pointer">
+                        <div onClick={() => navigate("/cart")} className="relative cursor-pointer">
                             <FiShoppingCart size={25} color='#ff4d2d' />
-                            <span className="absolute text-[#ff4d2d] -top-3 right-[-9px]">0</span>
+                            <span className="absolute text-[#ff4d2d] -top-3 right-[-9px]">{cartItems.length}</span>
                         </div>
                         <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium">
                             My Orders
