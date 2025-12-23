@@ -10,11 +10,10 @@ import { setUserData } from "../redux/userSlice";
 import { toast } from "react-toastify";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router";
+import { IoReceiptOutline } from "react-icons/io5";
 function Header() {
     const navigate = useNavigate()
-    const { userData } = useSelector((state) => state.user)
-    const { cityData } = useSelector((state) => state.user)
-    const { cartItems } = useSelector((state) => state.user)
+    const { userData, cityData, cartItems, myOrders } = useSelector((state) => state.user)
     const { shopData } = useSelector((state) => state.owner)
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
@@ -70,27 +69,30 @@ function Header() {
                             <FiShoppingCart size={25} color='#ff4d2d' />
                             <span className="absolute text-[#ff4d2d] -top-3 right-[-9px]">{cartItems.length}</span>
                         </div>
-                        <button className="hidden md:block px-3 py-1 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium">
-                            My Orders
+                        <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
+                            <IoReceiptOutline size={15} />
+
+                            <p onClick={() => navigate('/my-orders')} className="md:block hidden">My Orders</p>
+                            <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
                         </button>
 
                     </>
                     :
                     <>
                         <div className="flex items-center gap-4">
-                            {shopData && <button onClick={()=>navigate('/add-items')} className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] md:text-sm font-medium">
+                            {shopData && <button onClick={() => navigate('/add-items')} className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] md:text-sm font-medium">
                                 <FaPlus size={20} />
                                 <p className="md:block hidden">Add Items</p>
-                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{shopData.items.length ||  0}</span>
+                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{shopData.items.length || 0}</span>
 
                             </button>
                             }
-                            {/* <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
+                            <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                                 <IoReceiptOutline size={20} />
 
-                                <p className="md:block hidden">My Orders</p>
-                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">0</span>
-                            </button> */}
+                                <p onClick={() => navigate('/my-orders')} className="md:block hidden">My Orders</p>
+                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
+                            </button>
                         </div>
                     </>
                 }
@@ -106,7 +108,7 @@ function Header() {
                     &&
                     <div className="fixed top-20 right-[10%] lg:right-[25%] w-[180px] bg-white shadow-2xl rounded-xl p-4 flex flex-col font-semibold">
                         <div className="text-[14px]">{userData?.fullName}</div>
-                        <div className="md:hidden">My Orders</div>
+                        <div onClick={() => navigate('/my-orders')} className="md:hidden">My Orders</div>
                         <div onClick={signOutHandel} className="text-[#ff4d2d] cursor-pointer">log out</div>
                     </div>
                 }

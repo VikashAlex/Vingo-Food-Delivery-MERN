@@ -49,7 +49,7 @@ function CartPage({ data }) {
 
                                         <div>
                                             <h1 className="font-medium text-gray-800">
-                                                {data?.name}
+                                                {data?.itemName}
                                             </h1>
 
                                             <p className="text-sm text-gray-500">
