@@ -38,7 +38,7 @@ export const GetMyShop = async (req, res) => {
     try {
         const shop = await shopModel.findOne({ owner: req.userId }).populate('owner').populate('items');
         if (!shop) {
-            return res.status(404).json({ success: false, message: "shop not found" })
+            return null
         }
         res.status(201).json({ success: true, message: "shop get", shop })
     } catch (error) {

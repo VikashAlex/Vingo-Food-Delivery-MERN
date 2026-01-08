@@ -7,18 +7,22 @@ import { orderStsUpdate } from '../redux/userSlice'
 function OwnerOrders({ data }) {
     const dispatcher = useDispatch()
     const [status, setStatus] = useState(data?.shopOrders?.status || null)
+    const [availableBoys, setAbailableBoys] = useState([])
     const updateStshandel = (orderId, shopId) => {
         if (!status || !orderId || !shopId) {
             return alert("Somithing error")
         }
         AxiosInstance.put(`api/order/update-order-sts/${orderId}/${shopId}`, { status }).then((res) => {
             if (res.data.success) {
+                console.log(res.data)
                 dispatcher(orderStsUpdate({ orderId, shopId, status }))
+                setAbailableBoys(res.data.availableBoys)
             }
         }).catch((err) => {
             console.log(err)
         })
     }
+    console.log(data)
     return (
         <div className="bg-white rounded-lg shadow p-4 space-y-4">
             <div>
@@ -81,6 +85,36 @@ function OwnerOrders({ data }) {
                 </div>
 
             </div>
+
+            {
+                data?.shopOrders.status === "out of delivery" &&
+                <div className='mt-3 p-2 border rounded-lg text-sm bg-orange-50'>
+                    {
+                        data.shopOrders.assignedDeliveryBoy ?
+                            <p>Assigned Delivery Boy</p>
+                            :
+                            <p>Available Delivery Boys</p>
+                    }
+                    {
+                        availableBoys?.length > 0
+                            ?
+                            availableBoys?.map((b, index) => {
+                                return <div key={index}>
+                                    <p className='capitalize'>Name: {b.fullName}</p>
+                                    <p>Mobile: {b.mobile}</p>
+                                </div>
+                            })
+                            :
+                            data?.shopOrders.assignedDeliveryBoy ?
+                                <div>
+                                    <p className='capitalize'>{data?.shopOrders.assignedDeliveryBoy.fullName}</p>
+                                    <p>{data?.shopOrders.assignedDeliveryBoy.mobile}</p>
+                                </div>
+                                :
+                                <div>Waiting for assigen the order...</div>
+                    }
+                </div>
+            }
             <div className='text-gray-800 font-semibold text-right'>
                 Total:
                 {

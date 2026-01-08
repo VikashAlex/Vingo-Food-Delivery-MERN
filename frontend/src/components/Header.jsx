@@ -41,6 +41,7 @@ function Header() {
                     <input type="text" placeholder="Search delicious food..." className="px-2.5 text-gray-700 outline-0 w-full" />
                 </div>
             </div>}
+
             {
                 userData.role == "user" && showSearch &&
                 <div className="w-[90%] md:hidden  h-[55px] bg-white shadow-lg rounded-lg flex items-center gap-5 fixed top-20">
@@ -69,10 +70,10 @@ function Header() {
                             <FiShoppingCart size={25} color='#ff4d2d' />
                             <span className="absolute text-[#ff4d2d] -top-3 right-[-9px]">{cartItems.length}</span>
                         </div>
-                        <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
+                        <button onClick={() => navigate('/my-orders')} className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                             <IoReceiptOutline size={15} />
 
-                            <p onClick={() => navigate('/my-orders')} className="md:block hidden">My Orders</p>
+                            <p  className="md:block hidden">My Orders</p>
                             <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
                         </button>
 
@@ -87,10 +88,9 @@ function Header() {
 
                             </button>
                             }
-                            <button className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
+                            <button onClick={() => navigate('/my-orders')} className=" relative cursor-pointer hidden  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                                 <IoReceiptOutline size={20} />
-
-                                <p onClick={() => navigate('/my-orders')} className="md:block hidden">My Orders</p>
+                                <p  className="md:block hidden">My Orders</p>
                                 <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
                             </button>
                         </div>
@@ -98,7 +98,7 @@ function Header() {
                 }
 
 
-                <div onClick={() => setShowInfo(prev => !prev)} className="w-10 h-10 rounded-full bg-[#ff4d2d] flex items-center justify-center text-white text-[18px] font-semibold cursor-pointer">
+                <div onClick={() => setShowInfo(prev => !prev)} className="w-10 h-10 rounded-full bg-[#ff4d2d] flex items-center justify-center text-white text-[18px] uppercase font-semibold cursor-pointer">
                     {userData?.fullName?.slice(0, 1)}
                 </div>
 
@@ -106,8 +106,8 @@ function Header() {
                 {
                     showInfo
                     &&
-                    <div className="fixed top-20 right-[10%] lg:right-[25%] w-[180px] bg-white shadow-2xl rounded-xl p-4 flex flex-col font-semibold">
-                        <div className="text-[14px]">{userData?.fullName}</div>
+                    <div className={`fixed top-20 right-[10%] ${userData.role =="deliveryBoy" ? "md:right-[40%]":"md:right-[25%]"} w-[180px] bg-white shadow-2xl rounded-xl p-4 flex flex-col font-semibold`}>
+                        <div className="text-[14px] capitalize">{userData?.fullName}</div>
                         <div onClick={() => navigate('/my-orders')} className="md:hidden">My Orders</div>
                         <div onClick={signOutHandel} className="text-[#ff4d2d] cursor-pointer">log out</div>
                     </div>

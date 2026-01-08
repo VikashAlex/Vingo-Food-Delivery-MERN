@@ -1,7 +1,8 @@
+import { useNavigate } from "react-router";
 import { formatINRCurrency } from "../utils/helper";
 
 function UserOrders({ data }) {
-    
+    const navigate = useNavigate()
     const formatDate = (dateString) => {
         const date = new Date(dateString)
         return date.toLocaleDateString("en-IN", {
@@ -72,7 +73,7 @@ function UserOrders({ data }) {
 
             <div className="flex justify-between items-center pt-2 border-t">
                 <p className="font-semibold">Total:{formatINRCurrency(data.totalAmount)}</p>
-                <button className="font-semibold bg-[#ff4d2d] text-white py-2 px-4 rounded-lg cursor-pointer  text-sm">Track Order</button>
+                <button onClick={()=>navigate(`/track-order/${data._id}`)} className="font-semibold bg-[#ff4d2d] text-white py-2 px-4 rounded-lg cursor-pointer  text-sm">Track Order</button>
             </div>
 
         </div>

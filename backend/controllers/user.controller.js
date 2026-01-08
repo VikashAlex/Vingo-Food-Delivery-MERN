@@ -2,7 +2,7 @@ import userModel from "../models/user.model.js";
 
 export const getCurrentUser = async (req, res) => {
     try {
-        const userId= req.userId;
+        const userId = req.userId;
         if (!userId) {
             return res.status(400).json({ success: false, message: "userId not found." })
         }
@@ -14,5 +14,20 @@ export const getCurrentUser = async (req, res) => {
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: "get user error." })
+    }
+}
+export const userLocationUpdate = async (req, res) => {
+    try {
+        const { long, lati } = req.body
+        const user = await userModel.findByIdAndUpdate(req.userId, {
+            location: {
+                type: 'Point',
+                coordinates: [long, lati]
+            }
+        }, { new: true })
+        return res.status(201).json({ success: true, message: "user location update." })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: "location update error." })
     }
 }

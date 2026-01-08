@@ -16,6 +16,8 @@ import Checkout from './pages/Checkout'
 import OrderPlace from './pages/OrderPlace'
 import MyOrder from './pages/MyOrder'
 import useGetMyOrders from './hooks/useGetMyOrders'
+import useGetUpdateLocation from './hooks/useGetUpdateLocation'
+import TrackOrder from './pages/TrackOrder'
 
 function App() {
   useGetCurrentUser()
@@ -23,6 +25,7 @@ function App() {
   useGetMyShop()
   useGetShopInMyCity()
   useGetMyOrders()
+  useGetUpdateLocation()
   const { userData } = useSelector((state) => state.user)
   return (
     <Routes>
@@ -37,6 +40,7 @@ function App() {
       <Route path='/checkout' element={userData ? <Checkout /> : <Navigate to={'/'}></Navigate>}></Route>
       <Route path='/order-place' element={userData ? <OrderPlace /> : <Navigate to={'/sign-in'}></Navigate>}></Route>
       <Route path='/my-orders' element={userData ? <MyOrder /> : <Navigate to={'/sign-in'}></Navigate>}></Route>
+      <Route path='/track-order/:orderId' element={userData ? <TrackOrder /> : <Navigate to={'/sign-in'}></Navigate>}></Route>
     </Routes>
   )
 }
