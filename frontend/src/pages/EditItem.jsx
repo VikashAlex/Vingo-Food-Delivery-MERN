@@ -14,14 +14,13 @@ function EditItem() {
         "Snacks",
         "Main Course",
         "Desserts",
-        "Pizza",
+        "Pizza's",
         "Burgers",
         "Sandwiches",
-        "South Indain",
-        "North Indain",
+        "South Indian",
+        "North Indian",
         "Chinese",
         "Fast Food",
-        "Others"
     ]
     const [currentitem, setCuurentItem] = useState({});
     const [forminfo, setForminfo] = useState({

@@ -4,9 +4,9 @@ import { FaSearch } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { CiSearch } from "react-icons/ci";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosInstance } from "../utils/helper";
-import { setUserData } from "../redux/userSlice";
+import { setSearchItem, setUserData } from "../redux/userSlice";
 import { toast } from "react-toastify";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router";
@@ -17,6 +17,7 @@ function Header() {
     const { shopData } = useSelector((state) => state.owner)
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
+    const [query, setQuery] = useState('')
     const dispatcher = useDispatch()
     const signOutHandel = () => {
         AxiosInstance('/api/auth/signout').then((res) => {
@@ -28,6 +29,23 @@ function Header() {
             console.log(err)
         })
     }
+
+    const searchhHandel = () => {
+        AxiosInstance.get(`/api/item/getItem-seacrh?query=${query}&city=${cityData.city}`).then((res) => {
+            if (res.data.success) {
+                dispatcher(setSearchItem(res.data.items))
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+    useEffect(() => {
+        if (query) {
+            searchhHandel()
+        } else {
+            dispatcher(setSearchItem(null))
+        }
+    }, [query])
     return (
         <header className="w-full h-20 flex items-center justify-between  md:justify-center gap-[30px] px-5 fixed top-0 z-50 bg-[#fff9f6] overflow-visible">
             <h1 className="text-xl font-bold mb-2 text-[#ff4d2d]">Vingo</h1>
@@ -38,7 +56,7 @@ function Header() {
                 </div>
                 <div className="w-[80%] flex items-center overflow-hidden gap-2.5 px-2.5 ">
                     <FaSearch size={25} color="#ff4d2d" />
-                    <input type="text" placeholder="Search delicious food..." className="px-2.5 text-gray-700 outline-0 w-full" />
+                    <input onChange={(e) => setQuery(e.target.value)} value={query} type="text" placeholder="Search delicious food..." className="px-2.5 text-gray-700 outline-0 w-full" />
                 </div>
             </div>}
 
@@ -51,7 +69,7 @@ function Header() {
                     </div>
                     <div className="w-[80%] flex items-center overflow-hidden gap-2.5 px-2.5 ">
                         <FaSearch size={25} color="#ff4d2d" />
-                        <input type="text" placeholder="Search delicious food..." className="px-2.5 text-gray-700 outline-0 w-full" />
+                        <input onChange={(e) => setQuery(e.target.value)} value={query} type="text" placeholder="Search delicious food..." className="px-2.5 text-gray-700 outline-0 w-full" />
                     </div>
                 </div>
             }
@@ -73,7 +91,7 @@ function Header() {
                         <button onClick={() => navigate('/my-orders')} className=" relative cursor-pointer  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                             <IoReceiptOutline size={15} />
 
-                            <p  className="md:block hidden">My Orders</p>
+                            <p className="md:block hidden">My Orders</p>
                             <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
                         </button>
 
@@ -90,7 +108,7 @@ function Header() {
                             }
                             <button onClick={() => navigate('/my-orders')} className=" relative cursor-pointer hidden  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                                 <IoReceiptOutline size={20} />
-                                <p  className="md:block hidden">My Orders</p>
+                                <p className="md:block hidden">My Orders</p>
                                 <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
                             </button>
                         </div>
@@ -106,7 +124,7 @@ function Header() {
                 {
                     showInfo
                     &&
-                    <div className={`fixed top-20 right-[10%] ${userData.role =="deliveryBoy" ? "md:right-[40%]":"md:right-[25%]"} w-[180px] bg-white shadow-2xl rounded-xl p-4 flex flex-col font-semibold`}>
+                    <div className={`fixed top-20 right-[10%] ${userData.role == "deliveryBoy" ? "md:right-[40%]" : "md:right-[25%]"} w-[180px] bg-white shadow-2xl rounded-xl p-4 flex flex-col font-semibold`}>
                         <div className="text-[14px] capitalize">{userData?.fullName}</div>
                         <div onClick={() => navigate('/my-orders')} className="md:hidden">My Orders</div>
                         <div onClick={signOutHandel} className="text-[#ff4d2d] cursor-pointer">log out</div>

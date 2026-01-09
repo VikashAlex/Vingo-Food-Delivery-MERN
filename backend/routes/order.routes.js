@@ -1,6 +1,6 @@
 import express from 'express';
 import isAuth from '../middlewares/isAuth.js';
-import { acceptOrder, getCurrentorder, getDeliveryAssignment, getOrderById, getOrders, placeOreder, updateStatus } from '../controllers/order.controller.js';
+import { acceptOrder, deliveryOtpSend, deliveryOtpVerify, getCurrentorder, getDeliveryAssignment, getOrderById, getOrders, placeOreder, updateStatus } from '../controllers/order.controller.js';
 const orderRoutes = express.Router();
 
 orderRoutes.post('/place', isAuth,  placeOreder)
@@ -10,4 +10,6 @@ orderRoutes.put('/update-order-sts/:orderId/:shopId', isAuth,  updateStatus)
 orderRoutes.get('/accept-order/:assignementId', isAuth,acceptOrder)
 orderRoutes.get('/current-order/', isAuth,getCurrentorder)
 orderRoutes.get('/getOrder-by-id/:orderId', isAuth,getOrderById)
+orderRoutes.post('/delivery-otp-send', isAuth,deliveryOtpSend)
+orderRoutes.post('/delivery-otp-verify', isAuth,deliveryOtpVerify)
 export default orderRoutes

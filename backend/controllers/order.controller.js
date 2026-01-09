@@ -2,6 +2,8 @@ import assignmentModel from "../models/assignment.model.js"
 import orderModel from "../models/order.model.js"
 import shopModel from "../models/shop.model.js"
 import userModel from "../models/user.model.js"
+import { SendDeliveryEmail } from "../utils/email.js"
+import otpGenerator from 'otp-generator'
 
 export const placeOreder = async (req, res) => {
     try {
@@ -30,6 +32,7 @@ export const placeOreder = async (req, res) => {
             Object.keys(groupItemByShop).map(async (shopId) => {
                 const shop = await shopModel.findById(shopId).populate('owner')
                 if (!shop) {
+                    
                     throw new Error("Shop not found")
                 }
 
@@ -320,7 +323,62 @@ export const getOrderById = async (req, res) => {
         if (!order) {
             return res.status(400).json({ success: false, message: "order not found.." })
         }
-         return res.status(200).json({ success: true, message: "Order get .",order })
+        return res.status(200).json({ success: true, message: "Order get .", order })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+export const deliveryOtpSend = async (req, res) => {
+    try {
+        const { orderId, shopOrderId } = req.body;
+        const order = await orderModel.findById(orderId).populate('user')
+        const shopOrder = order.shopOrders.id(shopOrderId)
+        if (!order || !shopOrder) {
+            return res.status(400).json({ success: false, message: "enter valid order/shop.." })
+        }
+        const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false })
+        shopOrder.deliveryOtp = otp
+        shopOrder.otpExpires = Date.now() + 5 * 60 * 1000
+        await order.save()
+        await SendDeliveryEmail(order.user, otp)
+        return res.status(200).json({ success: true, message: "Otp Send Successfully ." })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+export const deliveryOtpVerify = async (req, res) => {
+    try {
+        const { orderId, shopOrderId, otp } = req.body;
+        const order = await orderModel.findById(orderId).populate('user')
+        const shopOrder = order.shopOrders.id(shopOrderId)
+        if (!order || !shopOrder) {
+            return res.status(400).json({ success: false, message: "enter valid order/shop.." })
+        }
+        if (!shopOrder.deliveryOtp) {
+            return res.status(400).json({ success: false, message: "somthing went wrong.." })
+        }
+        if (shopOrder.deliveryOtp !== otp) {
+            return res.status(400).json({ success: false, message: "otp is incorrect.." })
+        }
+        if (shopOrder.otpExpires < Date.now()) {
+            return res.status(400).json({ success: false, message: "otp is Expire.." })
+        }
+        shopOrder.deliveryOtp = null
+        shopOrder.otpExpires = null
+        shopOrder.status = "delivered",
+        shopOrder.deliveryAt=Date.now()
+        await order.save()
+
+        await assignmentModel.deleteOne({
+            shopOrderId:shopOrder._id,
+            order:order._id,
+            assignedTo:shopOrder.assignedDeliveryBoy
+        })
+        return res.status(200).json({ success: true, message: "Otp Verify Successfully ." })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: error.message })

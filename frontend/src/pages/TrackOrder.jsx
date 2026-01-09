@@ -72,7 +72,7 @@ function TrackOrder() {
                     )}
 
                     {
-                        shopOrder.assignedDeliveryBoy &&
+                        (shopOrder.assignedDeliveryBoy && shopOrder.status !== "delivered") &&
                         <div className="h-[400px] w-full overflow-hidden rounded-2xl  mt-3 shadow-md">
                             <DeliveryBoyTracking data={{
                                 deliverBoyLocation:{lat:shopOrder.assignedDeliveryBoy.location.coordinates[1], lon:shopOrder.assignedDeliveryBoy.location.coordinates[0]},

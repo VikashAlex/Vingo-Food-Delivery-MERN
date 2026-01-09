@@ -7,6 +7,9 @@ import { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import ShopCard from "./ShopCard.jsx"
 import ItemCard from "./ItemCard.jsx"
+import NoFoodFound from "./NoFoodFound.jsx"
+import { motion, AnimatePresence } from "framer-motion";
+import { containerVariant, itemVariant } from "../utils/animations.js"
 function UserDashboard() {
     const currentScrollRef = useRef()
     const currentShopScrollRef = useRef()
@@ -14,9 +17,9 @@ function UserDashboard() {
     const [showRightButton, setShowRightButton] = useState(false)
     const [showShopLeftButton, setShowShopLeftButton] = useState(false)
     const [showShopRightButton, setShowShopRightButton] = useState(false)
-
+    const [updatedList, setUpdatedList] = useState([])
     const { cityData } = useSelector((state) => state.user)
-    const { myCityShop, itemData } = useSelector((state) => state.user)
+    const { myCityShop, itemData, searchItem } = useSelector((state) => state.user)
     const scrollHandel = (ref, direcation) => {
         ref.current.scrollBy({
             left: direcation === "left" ? -200 : 200,
@@ -56,10 +59,66 @@ function UserDashboard() {
         };
     }, [categories])
 
+    const updateItemList = (category) => {
+        if (category === "All") {
+            setUpdatedList(itemData)
+        } else {
+            let updatedArry = itemData.filter((item) => item.category === category)
+            setUpdatedList(updatedArry)
+        }
+    }
+
+    useEffect(() => {
+        setUpdatedList(itemData)
+    }, [itemData])
 
     return (
         <main className='w-full min-h-screen  flex justify-center items-center flex-col bg-[#fff9f6]'>
             <Header />
+
+            {
+                searchItem && (
+                    <AnimatePresence>
+                        <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            variants={containerVariant}
+                            className="w-full max-w-6xl  min-h-[300px] fixed top-20 left-[50%] 
+        rounded-2xl py-5 -translate-x-[50%] z-50 flex flex-col gap-5 items-start p-2.5 bg-white/90 backdrop-blur-md"
+                        >
+                            <h1 className="text-gray-800 text-sm sm:text-3xl">
+                                Search Food Items
+                            </h1>
+
+                            {searchItem.length > 0 ? (
+                                <motion.div
+                                    variants={containerVariant}
+                                    className="w-full flex flex-wrap justify-center md:justify-start 
+            overflow-x-hidden gap-5 pb-2"
+                                    ref={currentShopScrollRef}
+                                >
+                                    {searchItem.map((item, index) => (
+                                        <motion.div key={index} variants={itemVariant}>
+                                            <ItemCard item={item} />
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="w-full h-full flex justify-center items-center"
+                                >
+                                    <NoFoodFound />
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+                )
+            }
+
+
             <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-2.5 mt-20 ">
                 <h1 className="text-gray-800 text-2xl sm:text-3xl">
                     Inspiration for your first order
@@ -73,7 +132,7 @@ function UserDashboard() {
 
                     <div className="w-full flex overflow-x-hidden gap-4 pb-2  scroll-smooth" ref={currentScrollRef}>
                         {categories.map((cate, index) => (
-                            <CategoryCard data={cate} key={index} />
+                            <CategoryCard onClick={updateItemList} data={cate} key={index} />
                         ))}
                     </div>
 
@@ -112,7 +171,7 @@ function UserDashboard() {
             {/* items in my city */}
             <div className="w-full max-w-6xl flex flex-col gap-5 items-start p-2.5 ">
                 <h1 className="text-gray-800 text-2xl sm:text-3xl">
-                    Suggested Food Items 
+                    Suggested Food Items
                 </h1>
                 <div className="w-full relative">
                     {showShopLeftButton &&
@@ -121,8 +180,8 @@ function UserDashboard() {
                         </button>
                     }
 
-                    <div className="w-full flex flex-wrap justify-center md:justify-items-start  overflow-x-hidden gap-4 pb-2  scroll-smooth" ref={currentShopScrollRef}>
-                        {itemData?.map((item, index) => (
+                    <div className="w-full flex flex-wrap justify-center md:justify-items-start  overflow-x-hidden gap-5 pb-2  scroll-smooth" ref={currentShopScrollRef}>
+                        {updatedList?.map((item, index) => (
                             <ItemCard item={item} key={index} />
                         ))}
                     </div>
@@ -134,7 +193,7 @@ function UserDashboard() {
                 </div>
             </div>
 
-          
+
         </main >
     )
 }

@@ -6,7 +6,8 @@ const initialState = {
     myCityShop: null,
     itemData: null,
     cartItems: [],
-    myOrders: []
+    myOrders: [],
+    searchItem: null
 }
 export const userSlice = createSlice({
     name: "user",
@@ -60,10 +61,13 @@ export const userSlice = createSlice({
             const { orderId, shopId, status } = action.payload;
             const order = state.myOrders.find((o) => o._id == orderId)
             if (order && order.shopOrders && order.shopOrders.shop._id == shopId) {
-                order.shopOrders.status=status
+                order.shopOrders.status = status
             }
         },
+        setSearchItem: (state, action) => {
+            state.searchItem = action.payload
+        }
     }
 })
-export const { setUserData, setCityData, removeToCart, setMyCityShop, setItemData, addToCart, qntyHandel, setOrders, addOrders,orderStsUpdate } = userSlice.actions;
+export const { setUserData, setCityData, removeToCart, setMyCityShop, setItemData, addToCart, qntyHandel, setOrders, addOrders, orderStsUpdate,setSearchItem } = userSlice.actions;
 export default userSlice.reducer;

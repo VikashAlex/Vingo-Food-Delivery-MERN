@@ -34,7 +34,7 @@ function Checkout() {
     const [flagSerach, setFlagSearch] = useState(true)
     const [PaymentMethod, setPaymentMethod] = useState('cod')
     const [loader, setLoader] = useState(false)
-    const { myOrders } = useSelector(state => state.user)
+    const { userData } = useSelector(state => state.user)
     const { cartItems } = useSelector(state => state.user)
     const totalAmount = (cartItems.reduce((acu, item) => acu += item.qnty * item.price, 0)) || 0
     const deliveryFee = totalAmount ? totalAmount > 500 ? 0 : 40 : 0
@@ -56,18 +56,8 @@ function Checkout() {
 
     const goToCurrentAddress = () => {
         setFlag(false)
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const { longitude, latitude } = position.coords
-            axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${apiKey}`).then((res) => {
-                if (res.data) {
-                    dispatcher(setAddress(res.data.results[0]))
-                    dispatcher(setPosition({ long: longitude, lati: latitude }))
-                    setFlag(true)
-                }
-            }).catch((err) => {
-                console.log(err)
-            })
-        })
+        dispatcher(setPosition({ long: userData.location.coordinates[0], lati: userData.location.coordinates[1] }))
+        setFlag(true)
     }
 
     const getLocationText = (key = null) => {

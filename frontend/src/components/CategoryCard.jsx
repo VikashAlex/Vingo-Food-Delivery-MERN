@@ -1,7 +1,7 @@
 
-function CategoryCard({data}) {
+function CategoryCard({data,onClick}) {
     return (
-        <div className="w-[120px] h-[120px] md:w-[180px] md:h-[180px] rounded-2xl  shrink-0 overflow-hidden bg-white shadow-lg shadow-gray-200 hover:shadow-lg transition-shadow relative">
+        <div  onClick={()=>onClick(data.category)} className="w-[120px] h-[120px] md:w-[180px] md:h-[180px] rounded-2xl  shrink-0 overflow-hidden bg-white shadow-lg shadow-gray-200 hover:shadow-lg transition-shadow relative">
             <img
                 src={data.image}
                 alt=""

@@ -105,12 +105,12 @@ export const getItemInCity = async (req, res) => {
         if (!city) {
             return res.status(400).json({ success: false, message: "city Not Found." })
         }
-        
-        const shop = await shopModel.find({city:city})
-        if(!shop){
+
+        const shop = await shopModel.find({ city: city })
+        if (!shop) {
             return res.status(400).json({ success: false, message: "shop Not Found." })
         }
-        const shopId = shop.map((shop)=>shop._id);
+        const shopId = shop.map((shop) => shop._id);
 
         const items = await itemModel.find({
             shop: { $in: shopId }
@@ -121,4 +121,49 @@ export const getItemInCity = async (req, res) => {
         console.log(error)
         return res.status(500).json({ success: false, message: "Item get Error.", error })
     }
+}
+
+export const getItemInShop = async (req, res) => {
+    try {
+        const { shopId } = req.params;
+        const shop = await shopModel.findById(shopId).populate('items')
+        if (!shop) {
+            return res.status(400).json({ success: false, message: "shop Not Found." })
+        }
+        return res.status(201).json({ success: true, message: "Item get Successfuly.", shop, items: shop.items })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: "Shop Item get Error.", error })
+    }
+
+}
+
+export const searchItems = async (req, res) => {
+    try {
+        const { query, city } = req.query;
+        if (!query || !city) {
+            return null
+        }
+        const shop = await shopModel.find({
+            city: { $regex: new RegExp(`^${city}$`, "i") }
+        }).populate('items')
+        if (!shop) {
+            return res.status(400).json({ success: false, message: "shop Not Found." })
+        }
+        const shopId = shop.map((shop) => shop._id);
+
+        const items = await itemModel.find({
+            shop: { $in: shopId },
+            $or: [
+                { itemName: { $regex: query, $options: "i" } },
+                { category: { $regex: query, $options: "i" } }
+            ]
+        })
+
+        return res.status(200).json({ success: true, message: "Item Seacrh Successfuly.", items })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: "Search Item  Error.", error })
+    }
+
 }

@@ -59,13 +59,13 @@ function ItemCard({ item }) {
                 </span>
 
                 <div className="inline-flex md:flex items-center md:mt-0 mt-2 border rounded-full overflow-hidden shadow-sm">
-                    <button onClick={() => qntyhandel("-")} className="px-2 py-1 hover:bg-gray-100 transition">
+                    <button onClick={() => qntyhandel("-")} className="px-2 cursor-pointer py-1 hover:bg-gray-100 transition">
                         <FaMinus size={12} />
                     </button>
 
                     <span className="text-sm">{qnty}</span>
 
-                    <button onClick={() => qntyhandel("+")} className="px-2 py-1 hover:bg-gray-100 transition">
+                    <button onClick={() => qntyhandel("+")} className="px-2 cursor-pointer py-1 hover:bg-gray-100 transition">
                         <FaPlus size={12} />
                     </button>
 
@@ -81,7 +81,7 @@ function ItemCard({ item }) {
                         }))
                     }
                     }
-                        className={`${cartItems.some((i) => i.id == item._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white px-3  py-2 flex justify-center items-center`}>
+                        className={`${cartItems.some((i) => i.id == item._id) ? "bg-gray-800" : "bg-[#ff4d2d]"} text-white px-3 cursor-pointer  py-2 flex justify-center items-center`}>
                         <FaShoppingCart />
                     </div>
                 </div>

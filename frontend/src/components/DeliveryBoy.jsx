@@ -3,16 +3,39 @@ import Header from "./Header";
 import { useEffect, useState } from "react";
 import { AxiosInstance, formatINRCurrency } from "../utils/helper";
 import DeliveryBoyTracking from "./DeliveryBoyTracking";
+import { toast } from "react-toastify";
 function DeliveryBoy() {
   const { userData } = useSelector(state => state.user);
   const [AvailableAssignments, setAbailableAssignments] = useState(null)
   const [showOtpBox, setShowOtpBox] = useState(false)
   const [currentOrder, setCurrentOrder] = useState()
+  const [otp, setOtp] = useState('')
 
-  const handleSendOtp = () => {
-    setShowOtpBox(true)
+  const handleSendOtp = (orderId, shopOrderId) => {
+
+    AxiosInstance.post('/api/order/delivery-otp-send', { orderId, shopOrderId }).then((res) => {
+      if (res.data.success) {
+        setShowOtpBox(true)
+        toast.success(res.data.message)
+      }
+    }).catch((err) => {
+      console.log(err)
+      toast.info(err.response.data.message)
+    })
   }
-
+  const handleVerifyOtp = (orderId, shopOrderId) => {
+    if (!otp) {
+      return alert('please enter otp..')
+    }
+    AxiosInstance.post('/api/order/delivery-otp-verify', { orderId, shopOrderId, otp }).then((res) => {
+      if (res.data.success) {
+        toast.success(res.data.message)
+      }
+    }).catch((err) => {
+      console.log(err)
+      toast.info(err.response.data.message)
+    })
+  }
   const getCurrentOrder = () => {
     AxiosInstance.get('/api/order/current-order').then((res) => {
       setCurrentOrder(res.data.data)
@@ -40,8 +63,6 @@ function DeliveryBoy() {
       console.log(err)
     })
   }
-
-  console.log(currentOrder)
   return (
     <div className="w-full min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto">
       <Header />
@@ -87,7 +108,7 @@ function DeliveryBoy() {
               {!showOtpBox ? (
                 <button
                   className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200"
-                  onClick={handleSendOtp}
+                  onClick={() => handleSendOtp(currentOrder._id, currentOrder.shopOrder._id)}
                 >
                   Mark As Delivered
                 </button>
@@ -99,11 +120,14 @@ function DeliveryBoy() {
 
                   <input
                     type="text"
+                    onChange={(e) => setOtp(e.target.value)}
                     className="w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
                     placeholder="Enter OTP"
                   />
 
-                  <button className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all">
+                  <button
+                    onClick={() => handleVerifyOtp(currentOrder._id, currentOrder.shopOrder._id)}
+                    className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all">
                     Submit OTP
                   </button>
                 </div>

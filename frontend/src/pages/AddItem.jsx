@@ -6,22 +6,23 @@ import { useState } from "react";
 import { AxiosInstance } from "../utils/helper";
 import { toast } from "react-toastify";
 import { setShopData } from "../redux/ownerSlice";
+import { BeatLoader } from "react-spinners";
 function AddItem() {
     const navigate = useNavigate()
     const dispatcher = useDispatch()
+    const [loader, setLoader] = useState(false)
     const { shopData } = useSelector((state) => state.owner)
     const categories = [
         "Snacks",
         "Main Course",
         "Desserts",
-        "Pizza",
+        "Pizza's",
         "Burgers",
         "Sandwiches",
-        "South Indain",
-        "North Indain",
+        "South Indian",
+        "North Indian",
         "Chinese",
         "Fast Food",
-        "Others"
     ]
     const [forminfo, setForminfo] = useState({
         itemName: "",
@@ -40,6 +41,7 @@ function AddItem() {
     }
     const sumithandel = (e) => {
         e.preventDefault()
+        setLoader(true)
         const formData = new FormData();
         formData.append('itemName', forminfo.itemName)
         formData.append('category', forminfo.category)
@@ -51,6 +53,7 @@ function AddItem() {
         AxiosInstance.post('api/item/item-add', formData).then((res) => {
             if (res.data.success) {
                 toast.success(res.data.message)
+                setLoader(false)
                 dispatcher(setShopData(res.data.shop))
                 navigate('/')
             }
@@ -120,7 +123,7 @@ function AddItem() {
 
 
                     <button className="w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer" >
-                        Save
+                         {loader ? <BeatLoader size={12} color="#ffffff" /> : "Save" }
                     </button>
                 </form>
             </div>
