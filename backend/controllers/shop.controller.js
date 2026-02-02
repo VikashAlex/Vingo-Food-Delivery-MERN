@@ -49,10 +49,13 @@ export const GetMyShop = async (req, res) => {
 export const getShopInMyCity = async (req, res) => {
     try {
         const { city } = req.params
-        if (!city) {
+        const cityName = city.trim();
+        if (!cityName) {
             return res.status(400).json({ success: false, message: "city not fond" })
         }
-        const cityinMyCity = await shopModel.find({city})
+        const cityinMyCity = await shopModel.find({
+                    city: { $regex: `^${cityName}`, $options: "i" }
+                });
         return res.status(201).json({ success: true, message: "get shopInmycity",cityinMyCity })
     } catch (error) {
         console.log(error);

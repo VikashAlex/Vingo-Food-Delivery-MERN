@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { io } from "socket.io-client";
 const AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_APP_API_BASE_URL,
   withCredentials: true,
 });
 const formatINRCurrency = (amount) => {
@@ -9,5 +10,9 @@ const formatINRCurrency = (amount) => {
     currency: "INR"
   }).format(amount);
 }
+const socket = io(
+  import.meta.env.VITE_APP_API_BASE_URL,
+  { withCredentials: true }
+);
 
-export { AxiosInstance, formatINRCurrency }
+export { AxiosInstance, formatINRCurrency,socket }

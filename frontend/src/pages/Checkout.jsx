@@ -15,7 +15,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { AxiosInstance, formatINRCurrency } from '../utils/helper'
 import { toast } from 'react-toastify'
-import { addOrders } from '../redux/userSlice'
+import { addOrders, emptyCart } from '../redux/userSlice'
 
 function ReCenterMap({ location }) {
     if (location.latitude && location.longtude) {
@@ -92,11 +92,20 @@ function Checkout() {
             },
             totalAmount: AmountWithDeliveryFee
         }).then((res) => {
-            if (res.data.success) {
-                toast.success(res.data.message)
-                setLoader(false)
-                dispatcher(addOrders(res.data.order))
-                navigate('/order-place')
+            if (PaymentMethod == "cod") {
+                if (res.data.success) {
+                    toast.success(res.data.message)
+                    setLoader(false)
+                    dispatcher(addOrders(res.data.order))
+                    dispatcher(emptyCart())
+                    navigate('/order-place')
+                }
+            } else {
+                if (res.data.success) {
+                    setLoader(false)
+                    const { razorpayOrder, orderId } = res.data.order
+                    openRazorPayWindow(orderId, razorpayOrder)
+                }
             }
         }).catch((err) => {
             console.log(err)
@@ -104,8 +113,32 @@ function Checkout() {
         })
     }
 
+    const openRazorPayWindow = (orderId, razorpayOrder) => {
+        const options = {
+            Key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency,
+            name: 'Vingo',
+            description: "Food Delivery Website.",
+            order_id: razorpayOrder.id,
+            handler: function (response) {
+                AxiosInstance.post('/api/order/verify-payment', { razorpayment_id: response.razorpay_payment_id, orderId }).then((res) => {
+                    if (res.data.success) {
+                        toast.success(res.data.message)
+                        dispatcher(emptyCart())
+                        dispatcher(addOrders(res.data.order))
+                        navigate('/order-place')
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
+            }
+        }
+        let rzp = new window.Razorpay(options)
+        rzp.open()
+    }
     return (
-        <div className="min-h-screen bg-[#fff9f6] flex items-center justify-center p-6">
+        <div className="min-h-screen md:bg-[#fff9f6] bg-white flex items-center justify-center md:p-6 ">
             <div
                 className="absolute top-5 left-5 z-10"
                 onClick={() => navigate("/")}
@@ -116,7 +149,7 @@ function Checkout() {
                 />
             </div>
 
-            <div className="w-full max-w-[900px] bg-white rounded-2xl shadow-xl p-6 space-y-6">
+            <div className="w-full  md:max-w-[900px] bg-white md:mt-0 mt-10 rounded-2xl md:shadow-xl md:p-6 p-4  space-y-6">
                 <h1 className="text-2xl font-bold text-gray-800">
                     Checkout
                 </h1>

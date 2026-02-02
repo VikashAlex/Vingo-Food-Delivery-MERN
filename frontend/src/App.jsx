@@ -3,7 +3,7 @@ import SignUp from './pages/Signup'
 import SignIn from './pages/SignIn'
 import ForgotPassword from './pages/ForgotPassword'
 import useGetCurrentUser from './hooks/useGetCurrentUser'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Home from './pages/Home'
 import useGetCurrentCity from './hooks/useGetCurrentCity'
 import useGetMyShop from './hooks/useGetMyShop'
@@ -19,15 +19,48 @@ import useGetMyOrders from './hooks/useGetMyOrders'
 import useGetUpdateLocation from './hooks/useGetUpdateLocation'
 import TrackOrder from './pages/TrackOrder'
 import Shop from './pages/Shop'
-
+import { useEffect } from 'react'
+import { io } from 'socket.io-client'
+import { setOrders, setSocket } from './redux/userSlice'
+import { socket } from './utils/helper'
+import useGetBoyMyOrders from './hooks/useGetBoyMyOrders'
 function App() {
   useGetCurrentUser()
   useGetCurrentCity()
   useGetMyShop()
   useGetShopInMyCity()
   useGetMyOrders()
+  useGetBoyMyOrders()
   useGetUpdateLocation()
-  const { userData } = useSelector((state) => state.user)
+  const { userData, myOrders } = useSelector((state) => state.user)
+  const dispatcher = useDispatch()
+
+  useEffect(() => {
+    if (!userData?._id) return;
+
+    // agar socket already connected hai
+    if (socket.connected) {
+      socket.emit("identity", { userId: userData._id });
+    }
+
+    const handleConnect = () => {
+      socket.emit("identity", { userId: userData._id });
+    };
+    const handleNewOrder = (data) => {
+      dispatcher(setOrders([data, ...myOrders]));
+    };
+
+    socket.on("connect", handleConnect);
+    socket.on("newOrder", handleNewOrder);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("newOrder", handleNewOrder);
+    };
+  }, [userData?._id]);
+
+
+
   return (
     <Routes>
       <Route path='/sign-up' element={userData ? <Navigate to={'/'}></Navigate> : <SignUp />}></Route>

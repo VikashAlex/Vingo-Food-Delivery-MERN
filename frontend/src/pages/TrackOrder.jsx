@@ -43,7 +43,7 @@ function TrackOrder() {
                             <span>Items: </span>
                             {shopOrder.shopOrderItem?.map(i => i.name).join(",")}
                         </p>
-                        <p><span className="font-semibold">SubTotatl : </span> {formatINRCurrency(shopOrder?.subTotal)}</p>
+                        <p><span className="font-semibold">SubTotatl : </span> {formatINRCurrency(currentOrder?.totalAmount)}</p>
                         <p className="mt-5"><span className="font-semibold">Delivery Address : </span> {currentOrder?.deliveryAddress?.text}</p>
                     </div>
 

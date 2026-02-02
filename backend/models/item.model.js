@@ -19,11 +19,11 @@ const itemSchema = new mongoose.Schema({
             "Snacks",
             "Main Course",
             "Desserts",
-            "Pizza",
+            "Pizza's",
             "Burgers",
             "Sandwiches",
-            "South Indain",
-            "North Indain",
+            "South Indian",
+            "North Indian",
             "Chinese",
             "Fast Food",
             "Others"
@@ -41,7 +41,6 @@ const itemSchema = new mongoose.Schema({
         required: true
     },
     ratting: {
-        min: { type: Number, default: 0 },
         count: { type: Number, default: 0 },
         average: { type: Number, default: 0 },
     }

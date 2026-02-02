@@ -1,9 +1,18 @@
+import Razorpay from "razorpay"
 import assignmentModel from "../models/assignment.model.js"
 import orderModel from "../models/order.model.js"
 import shopModel from "../models/shop.model.js"
 import userModel from "../models/user.model.js"
 import { SendDeliveryEmail } from "../utils/email.js"
 import otpGenerator from 'otp-generator'
+import dotenv from 'dotenv'
+dotenv.config()
+
+let instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
 
 export const placeOreder = async (req, res) => {
     try {
@@ -32,7 +41,7 @@ export const placeOreder = async (req, res) => {
             Object.keys(groupItemByShop).map(async (shopId) => {
                 const shop = await shopModel.findById(shopId).populate('owner')
                 if (!shop) {
-                    
+
                     throw new Error("Shop not found")
                 }
 
@@ -53,27 +62,124 @@ export const placeOreder = async (req, res) => {
             })
         )
 
-        const newOrder = await orderModel.create({
-            user: req.userId,
-            paymentMethod,
-            deliveryAddress,
-            totalAmount,
-            shopOrders
-        })
-        await newOrder.populate('shopOrders.shop', "shopName")
-        await newOrder.populate('shopOrders.owner', "fullName email mobile")
-        await newOrder.populate('shopOrders.shopOrderItem.item', "image itemName price")
-        return res.status(201).json({
-            success: true,
-            message: "Order placed successfully",
-            order: newOrder
-        })
+        let newOrder = null
+        if (paymentMethod == "online") {
+            const razorpayOrder = await instance.orders.create({
+                amount: Math.round(totalAmount * 100),
+                currency: 'INR',
+                receipt: `receipt_${Date.now()}`
+            })
+            newOrder = await orderModel.create({
+                user: req.userId,
+                paymentMethod,
+                deliveryAddress,
+                totalAmount,
+                shopOrders,
+                razorpayOrderId: razorpayOrder.id,
+                payment: false
+            })
+            return res.status(201).json({
+                success: true,
+                message: "Order placed successfully",
+                order: { razorpayOrder, orderId: newOrder._id }
+            })
+        } else {
+            newOrder = await orderModel.create({
+                user: req.userId,
+                paymentMethod,
+                deliveryAddress,
+                totalAmount,
+                shopOrders
+            })
+            await newOrder.populate('shopOrders.shop', "shopName")
+            await newOrder.populate('shopOrders.owner', "fullName email mobile socketId")
+            await newOrder.populate('shopOrders.shopOrderItem.item', "image itemName price")
+            await newOrder.populate('user', "fullName email mobile")
+
+            const io = req.app.get('io')
+            if (io) {
+                newOrder.shopOrders.forEach(shopOrder => {
+                    const ownerSocketId = shopOrder.owner.socketId
+                    if (ownerSocketId) {
+                        io.to(ownerSocketId).emit('newOrder', {
+                            _id: newOrder._id,
+                            user: newOrder.user,
+                            deliveryAddress: newOrder.deliveryAddress,
+                            paymentMethod: newOrder.paymentMethod,
+                            totalAmount: newOrder.totalAmount,
+                            shopOrders: shopOrder,
+                            payment: newOrder.payment,
+                            createdAt: newOrder.createdAt
+                        })
+                    }
+                })
+            }
+            return res.status(201).json({
+                success: true,
+                message: "Order placed successfully",
+                order: newOrder
+            })
+        }
+
 
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: error.message })
     }
 }
+
+export const paymentVerify = async (req, res) => {
+    try {
+        const { razorpayment_id, orderId } = req.body;
+        const payment = await instance.payments.fetch(razorpayment_id);
+        if (!payment || payment.status != "captured") {
+            return res.status(400).json({ success: false, message: "payment not captured." })
+        }
+        const order = await orderModel.findById(orderId);
+        if (!order) {
+            return res.status(400).json({ success: false, message: "order not found." })
+        }
+        order.payment = true
+        order.razorpaypaymentId = razorpayment_id
+        await order.save()
+        await order.populate('shopOrders.shop', "shopName")
+        await order.populate('shopOrders.owner', "fullName email mobile socketId")
+        await order.populate('shopOrders.shopOrderItem.item', "image itemName price")
+        await order.populate('user', "fullName email mobile")
+
+        const io = req.app.get('io')
+        if (io) {
+            order.shopOrders.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.socketId
+                if (ownerSocketId) {
+                    io.to(ownerSocketId).emit('newOrder', {
+                        _id: order._id,
+                        user: order.user,
+                        deliveryAddress: order.deliveryAddress,
+                        paymentMethod: order.paymentMethod,
+                        totalAmount: order.totalAmount,
+                        shopOrders: shopOrder,
+                        payment: order.payment,
+                        createdAt: order.createdAt
+                    })
+                }
+            })
+        }
+
+
+
+        return res.status(201).json({
+            success: true,
+            message: "payment successfully",
+            order
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: error.message })
+    }
+
+}
+
 export const getOrders = async (req, res) => {
     try {
         const user = await userModel.findById(req.userId)
@@ -99,6 +205,7 @@ export const getOrders = async (req, res) => {
                 paymentMethod: order.paymentMethod,
                 totalAmount: order.totalAmount,
                 shopOrders: order.shopOrders.find((o) => o.owner._id == req.userId),
+                payment: order.payment,
                 createdAt: order.createdAt
             }))
             return res.status(200).json({ success: true, message: "Orders found.", Orders: fillterOrder })
@@ -370,15 +477,73 @@ export const deliveryOtpVerify = async (req, res) => {
         shopOrder.deliveryOtp = null
         shopOrder.otpExpires = null
         shopOrder.status = "delivered",
-        shopOrder.deliveryAt=Date.now()
+            shopOrder.deliveryAt = Date.now()
         await order.save()
 
         await assignmentModel.deleteOne({
-            shopOrderId:shopOrder._id,
-            order:order._id,
-            assignedTo:shopOrder.assignedDeliveryBoy
+            shopOrderId: shopOrder._id,
+            order: order._id,
+            assignedTo: shopOrder.assignedDeliveryBoy
         })
         return res.status(200).json({ success: true, message: "Otp Verify Successfully ." })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+export const getTodayDeliveries = async (req, res) => {
+    try {
+        const deliverBoyId = req.userId;
+        const startofDay = new Date()
+        startofDay.setHours(0, 0, 0, 0)
+
+        const orders = await orderModel.find({
+            "shopOrders.assignedDeliveryBoy": deliverBoyId,
+            "shopOrders.status": "delivered",
+            "shopOrders.deliveryAt": { $gte: startofDay }
+        }).lean()
+
+        let todayDeliveries = []
+        orders.forEach(order => {
+            order.shopOrders.forEach(shopOrder => {
+                if (shopOrder.assignedDeliveryBoy == deliverBoyId
+                    && shopOrder.status == "delivered"
+                    && shopOrder.deliveryAt
+                    && shopOrder.deliveryAt >= startofDay
+
+                ) {
+                    todayDeliveries.push(shopOrder)
+                }
+            })
+        });
+
+        let stats = {}
+        todayDeliveries.forEach(shopOrder => {
+            const hour = new Date(shopOrder.deliveryAt).getHours()
+            stats[hour] = (stats[hour] || 0) + 1
+        })
+        let formattedStats = Object.keys(stats).map(hour => ({
+            hour: parseInt(hour),
+            count: stats[hour]
+        }))
+        formattedStats.sort((a, b) => a.hour - b.hour);
+        return res.status(200).json({ success: true, message: "get today orders .", formattedStats })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+export const getDeliveryBoyOrder = async (req, res) => {
+    try {
+        const deliverBoyId = req.userId;
+        const orders = await orderModel.find({
+            "shopOrders.assignedDeliveryBoy": deliverBoyId,
+            "shopOrders.status": "delivered",
+        }).lean()
+
+        return res.status(200).json({ success: true, message: "get my orders .", orders })
     } catch (error) {
         console.log(error)
         return res.status(500).json({ success: false, message: error.message })

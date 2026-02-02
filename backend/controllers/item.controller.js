@@ -102,11 +102,14 @@ export const deleteItem = async (req, res) => {
 export const getItemInCity = async (req, res) => {
     try {
         const { city } = req.params
-        if (!city) {
+        const cityName = city.trim();
+        if (!cityName) {
             return res.status(400).json({ success: false, message: "city Not Found." })
         }
+        const shop = await shopModel.find({
+            city: { $regex: `^${cityName}`, $options: "i" }
+        });
 
-        const shop = await shopModel.find({ city: city })
         if (!shop) {
             return res.status(400).json({ success: false, message: "shop Not Found." })
         }
@@ -167,3 +170,56 @@ export const searchItems = async (req, res) => {
     }
 
 }
+
+export const ratting = async (req, res) => {
+    try {
+        const { itemId, ratting } = req.body;
+
+        if (!itemId || ratting === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "itemId and ratting are required"
+            });
+        }
+
+        if (ratting < 1 || ratting > 5) {
+            return res.status(400).json({
+                success: false,
+                message: "ratting must be between 1 and 5"
+            });
+        }
+
+        const item = await itemModel.findById(itemId);
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: "Item not found"
+            });
+        }
+
+        const oldCount = item.ratting.count;
+        const oldAverage = item.ratting.average;
+
+        const newCount = oldCount + 1;
+        const newAverage =
+            ((oldAverage * oldCount) + ratting) / newCount;
+
+        item.ratting.count = newCount;
+        item.ratting.average = Number(newAverage.toFixed(1));
+
+        await item.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Rating submitted successfully",
+            ratting: item.ratting
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Rating error"
+        });
+    }
+};

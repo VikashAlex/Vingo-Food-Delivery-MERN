@@ -11,13 +11,15 @@ import { toast } from "react-toastify";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { IoReceiptOutline } from "react-icons/io5";
+import MyOrder from "../pages/MyOrder";
 function Header() {
     const navigate = useNavigate()
-    const { userData, cityData, cartItems, myOrders } = useSelector((state) => state.user)
+    const { userData, cityData, cartItems, myOrders, deliverBoyOrder } = useSelector((state) => state.user)
     const { shopData } = useSelector((state) => state.owner)
     const [showInfo, setShowInfo] = useState(false);
     const [showSearch, setShowSearch] = useState(false)
     const [query, setQuery] = useState('')
+    const [length, setLength] = useState(0)
     const dispatcher = useDispatch()
     const signOutHandel = () => {
         AxiosInstance('/api/auth/signout').then((res) => {
@@ -46,6 +48,14 @@ function Header() {
             dispatcher(setSearchItem(null))
         }
     }, [query])
+   useEffect(() => {
+  if (myOrders.length < 1) {
+    setLength(deliverBoyOrder.length);
+  } else {
+    setLength(myOrders.length);
+  }
+}, [myOrders, deliverBoyOrder]);
+
     return (
         <header className="w-full h-20 flex items-center justify-between  md:justify-center gap-[30px] px-5 fixed top-0 z-50 bg-[#fff9f6] overflow-visible">
             <h1 className="text-xl font-bold mb-2 text-[#ff4d2d]">Vingo</h1>
@@ -109,7 +119,7 @@ function Header() {
                             <button onClick={() => navigate('/my-orders')} className=" relative cursor-pointer hidden  md:flex gap-2 items-center md:px-3  md:py-2 py-2 px-4  rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d]  md:text-sm font-medium">
                                 <IoReceiptOutline size={20} />
                                 <p className="md:block hidden">My Orders</p>
-                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{myOrders?.length}</span>
+                                <span className="absolute bg-[#ff4d2d] -top-3 -right-2 md:h-5 h-4 flex items-center justify-center md:w-5 w-4 md:p-0 p-3 rounded-full text-white">{length}</span>
                             </button>
                         </div>
                     </>

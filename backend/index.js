@@ -9,10 +9,23 @@ import userRoutes from './routes/user.routes.js';
 import shopRoutes from './routes/shop.routes.js';
 import itemRoutes from './routes/item.routes.js';
 import orderRoutes from './routes/order.routes.js';
-
+import http from 'http'
+import { Server } from 'socket.io';
+import { sockethandler } from './socket.io.js';
 const app = express();
+const server = http.createServer(app)
 const port = process.env.PORT || 5000;
 
+const io = new Server(server,{
+    cors:
+    {
+        origin: 'http://localhost:5173',
+        credentials: true,
+        methods:['POST','GET']
+    }
+})
+app.set('io',io)  
+sockethandler(io) 
 app.use(cors(
     {
         origin: 'http://localhost:5173',
@@ -30,7 +43,7 @@ app.use('/api/order', orderRoutes)
 
 
 // MongoDB Connection //
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server is started ${port}...`)
     mongoDB()
 })

@@ -3,39 +3,59 @@ import Header from "./Header";
 import { useEffect, useState } from "react";
 import { AxiosInstance, formatINRCurrency } from "../utils/helper";
 import DeliveryBoyTracking from "./DeliveryBoyTracking";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { toast } from "react-toastify";
+import { BeatLoader } from "react-spinners";
 function DeliveryBoy() {
   const { userData } = useSelector(state => state.user);
+  const [todayDeliveries, setTodayDeliveries] = useState([])
   const [AvailableAssignments, setAbailableAssignments] = useState(null)
   const [showOtpBox, setShowOtpBox] = useState(false)
   const [currentOrder, setCurrentOrder] = useState()
+  const [loader, setLoader] = useState(false)
   const [otp, setOtp] = useState('')
 
   const handleSendOtp = (orderId, shopOrderId) => {
-
+    setLoader(true)
     AxiosInstance.post('/api/order/delivery-otp-send', { orderId, shopOrderId }).then((res) => {
       if (res.data.success) {
         setShowOtpBox(true)
         toast.success(res.data.message)
+        setLoader(false)
       }
     }).catch((err) => {
       console.log(err)
       toast.info(err.response.data.message)
+      setLoader(false)
     })
   }
   const handleVerifyOtp = (orderId, shopOrderId) => {
+    setLoader(true)
     if (!otp) {
       return alert('please enter otp..')
     }
     AxiosInstance.post('/api/order/delivery-otp-verify', { orderId, shopOrderId, otp }).then((res) => {
       if (res.data.success) {
         toast.success(res.data.message)
+        setLoader(false)
+        location.reload()
       }
     }).catch((err) => {
       console.log(err)
       toast.info(err.response.data.message)
+      setLoader(false)
     })
   }
+  const getTodayDeliveries = () => {
+    AxiosInstance.get('/api/order/gettoday-deliveries').then((res) => {
+      if (res.data.success) {
+        setTodayDeliveries(res.data.formattedStats)
+      }
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
   const getCurrentOrder = () => {
     AxiosInstance.get('/api/order/current-order').then((res) => {
       setCurrentOrder(res.data.data)
@@ -51,6 +71,7 @@ function DeliveryBoy() {
       console.log(err)
     })
     getCurrentOrder()
+    getTodayDeliveries()
   }, [userData])
 
   const getAcceptOrder = (assignementId) => {
@@ -63,6 +84,9 @@ function DeliveryBoy() {
       console.log(err)
     })
   }
+
+  const ratePerDelivery = 50;
+  const totalEraning = todayDeliveries.reduce((sum, e) => sum * e.count + ratePerDelivery, 0)
   return (
     <div className="w-full min-h-screen flex flex-col gap-5 items-center bg-[#fff9f6] overflow-y-auto">
       <Header />
@@ -79,6 +103,25 @@ function DeliveryBoy() {
             {userData.location.coordinates[0]}
           </p>
 
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-md p-5 w-[90%] mb-6 border border-orange-100">
+          <h1 className="text-lg font-bold mb-3 text-[#ff4d2d]">Today Deliveries</h1>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={todayDeliveries}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="hour" tickFormatter={(h) => `${h}:00`} />
+              <YAxis allowDecimals={false} />
+              <Tooltip formatter={(value) => [value, "orders"]} labelFormatter={(label) => `${label}:00`} />
+              <Bar dataKey="count" fill="#ff4d2d" />
+            </BarChart>
+          </ResponsiveContainer>
+
+          <div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center">
+            <h1 className='text-xl font-semibold text-gray-800 mb-2'>Today's Eraning
+              <span className="text-3xl font-bold text-green-600">{formatINRCurrency(totalEraning)}</span>
+            </h1>
+          </div>
         </div>
 
         {
@@ -110,7 +153,8 @@ function DeliveryBoy() {
                   className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200"
                   onClick={() => handleSendOtp(currentOrder._id, currentOrder.shopOrder._id)}
                 >
-                  Mark As Delivered
+
+                  {loader ? <BeatLoader size={12} color="#ffffff" /> : "Mark As Delivered"}
                 </button>
               ) : (
                 <div className="mt-4 p-4 border rounded-xl bg-gray-50">
@@ -128,7 +172,8 @@ function DeliveryBoy() {
                   <button
                     onClick={() => handleVerifyOtp(currentOrder._id, currentOrder.shopOrder._id)}
                     className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all">
-                    Submit OTP
+
+                    {loader ? <BeatLoader size={12} color="#ffffff" /> : " Submit OTP"}
                   </button>
                 </div>
               )}
@@ -142,6 +187,7 @@ function DeliveryBoy() {
                   AvailableAssignments?.length > 0
                     ?
                     AvailableAssignments?.map((a, index) => {
+                      console.log(a)
                       return <div className="border rounded-lg p-4 flex justify-between items-center  " key={index}>
                         <div>
                           <p className="text-sm font-semibold">{a.shopName}</p>

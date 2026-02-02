@@ -1,12 +1,14 @@
 import { IoIosArrowRoundBack } from "react-icons/io"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router"
 import UserOrders from "../components/UserOrders"
 import OwnerOrders from "../components/OwnerOrders"
-
+import OrderDetails from "../components/OrderDetails"
 function MyOrder() {
     const navigate = useNavigate()
     const { userData, myOrders } = useSelector(state => state.user)
+    const {deliverBoyOrder}=useSelector((state)=>state.user)
+   
     return (
         <div className="w-full min-h-screen bg-[#fff9f6] flex justify-center px-4">
             <div className="w-full max-w-[800px] p-4">
@@ -27,13 +29,20 @@ function MyOrder() {
                                 <UserOrders key={index} data={data} />
                                 :
                                 userData.role === "owner"
-                                ?
-                                <OwnerOrders key={index} data={data} />
-                                :
-                                null)
+                                    ?
+                                    <OwnerOrders key={index} data={data} />
+                                    :
+                                    null)
                         })
                     }
                 </div>
+                {
+                    myOrders.length < 1 && deliverBoyOrder &&
+                    deliverBoyOrder?.map((data, index) => {
+                       return <OrderDetails key={index} order={data} />
+
+                    })
+                }
             </div>
         </div>
     )

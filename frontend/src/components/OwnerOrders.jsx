@@ -14,7 +14,6 @@ function OwnerOrders({ data }) {
         }
         AxiosInstance.put(`api/order/update-order-sts/${orderId}/${shopId}`, { status }).then((res) => {
             if (res.data.success) {
-                console.log(res.data)
                 dispatcher(orderStsUpdate({ orderId, shopId, status }))
                 setAbailableBoys(res.data.availableBoys)
             }
@@ -22,7 +21,6 @@ function OwnerOrders({ data }) {
             console.log(err)
         })
     }
-    console.log(data)
     return (
         <div className="bg-white rounded-lg shadow p-4 space-y-4">
             <div>
@@ -38,6 +36,14 @@ function OwnerOrders({ data }) {
                     <MdPhone />
                     <span>{data.user.mobile}</span>
                 </p>
+                <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">Payment Mode : <span className='text-[#ff4d2d] uppercase font-bold text-[10px]'>{data.paymentMethod == "online" ? "online" : "case on delivery"}</span></p>
+                {
+                    data?.paymentMethod == "online" &&
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">Payment Status :
+                        <p className={`text-sm py-1 ${data.payment ? "text-green-500" : "text-red-500"}`}> {data.payment ? "Payment is Successfull" : "Payment is faild"} </p>
+                    </div>
+                }
+
             </div>
 
             <div className="flex items-start flex-col gap-2 text-gray-600 text-sm">
@@ -118,7 +124,7 @@ function OwnerOrders({ data }) {
             <div className='text-gray-800 font-semibold text-right'>
                 Total:
                 {
-                    formatINRCurrency(data.shopOrders.subTotal)
+                    formatINRCurrency(data.totalAmount)
                 }
             </div>
         </div>

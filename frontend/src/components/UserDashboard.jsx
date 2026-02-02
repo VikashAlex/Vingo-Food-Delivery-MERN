@@ -20,6 +20,7 @@ function UserDashboard() {
     const [updatedList, setUpdatedList] = useState([])
     const { cityData } = useSelector((state) => state.user)
     const { myCityShop, itemData, searchItem } = useSelector((state) => state.user)
+
     const scrollHandel = (ref, direcation) => {
         ref.current.scrollBy({
             left: direcation === "left" ? -200 : 200,
@@ -60,13 +61,17 @@ function UserDashboard() {
     }, [categories])
 
     const updateItemList = (category) => {
-        if (category === "All") {
-            setUpdatedList(itemData)
-        } else {
-            let updatedArry = itemData.filter((item) => item.category === category)
-            setUpdatedList(updatedArry)
+        if (itemData && itemData?.length > 0) {
+            if (category === "All") {
+                setUpdatedList(itemData)
+            } else {
+                let updatedArry = itemData.filter((item) => item.category === category)
+                setUpdatedList(updatedArry)
+            }
         }
     }
+
+
 
     useEffect(() => {
         setUpdatedList(itemData)
@@ -94,8 +99,8 @@ function UserDashboard() {
                             {searchItem.length > 0 ? (
                                 <motion.div
                                     variants={containerVariant}
-                                    className="w-full flex flex-wrap justify-center md:justify-start 
-            overflow-x-hidden gap-5 pb-2"
+                                    className="w-full flex flex-wrap justify-center 
+            overflow-x-hidden gap-5 pb-2.5"
                                     ref={currentShopScrollRef}
                                 >
                                     {searchItem.map((item, index) => (
