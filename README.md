@@ -1,110 +1,118 @@
-# 🍕 **Vingo – Food Delivery Website**
+# 🍔 Vingo – Food Delivery MERN Stack Application
 
-### **Realtime Map Live Tracking 🔥 | MERN Stack | Google Auth | Razorpay**
-
----
-
-## 🚀 **Project Overview**
-
-**Vingo** is a modern **Food Delivery Web App** built with the **MERN Stack** featuring **real‑time map tracking**, **Google authentication**, **Razorpay payments**, and a smooth food‑ordering experience.
-
-Users can browse food items, add to cart, place orders, and track delivery live on a map.
+Vingo is a full-stack food delivery web application built using the **MERN stack**.  
+It supports multiple user roles, real-time order updates, authentication, and online payments.
 
 ---
 
-## ⭐ **Features**
+## 🚀 Features
 
-* 🔐 **Google Login + JWT Auth**
-* 🍔 **Food Menu with Categories**
-* 🛒 **Add to Cart + Update + Remove**
-* 📍 **Realtime Map Live Order Tracking**
-* 💳 **Razorpay Payment Integration**
-* 🚴 **Live Delivery Partner Location Updates**
-* 📦 **Order History**
-* 👨‍💼 **Admin Panel (Foods / Orders / Users)**
-* 🏪 **Restaurant Management**
-* 📸 **Image Upload (Multer)**
-* 🔔 **OTP System (Email/SMS)**
-* 🍪 **Secure Cookies & Sessions**
-* 📱 **Fully Responsive UI**
+### 👥 User Roles
+- User
+- Restaurant Owner
+- Delivery Boy
 
----
+### 🔐 Authentication
+- Email & Password login
+- Google Sign-In (Firebase)
+- Role-based protected routes
 
-## 🛠️ **Tech Stack**
+### 🛒 Core Functionality
+- Browse food items
+- Add to cart
+- Place orders
+- Track orders in real time
+- Order history
+- Live order status with Socket.io
 
-### **Frontend**
+### 💳 Payments
+- Razorpay integration
 
-* React.js
-* Redux Toolkit
-* Tailwind CSS
-* Axios
-* React Router DOM
-
-### **Backend**
-
-* Node.js
-* Express.js
-* MongoDB (Mongoose)
-* JWT Auth
-* Multer File Uploads
-* Cookies + OTP System
+### ⚡ Real-Time
+- Live order updates using Socket.io
 
 ---
 
-## 📸 **Screenshots**
+## 🛠️ Tech Stack
 
-(Add your images here when ready)
+### Frontend
+- React (Vite)
+- React Router DOM
+- Redux Toolkit
+- Firebase Authentication
+- Axios
+- CSS
 
-```
-After Complete
-```
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- Razorpay
+- Socket.io
+- JWT Authentication
+
+### Deployment
+- Frontend: **Vercel**
+- Backend: **Render**
+- Database: **MongoDB Atlas**
 
 ---
 
-## 🔧 **Installation & Setup**
 
-### **1️⃣ Clone the Repository**
+---
 
+## ⚙️ Environment Variables
+
+### Backend (`backend/.env`)
+PORT=8000
+MONGODB_URL=mongodb+srv://yourdatabaseURL:password@vingodb.poq8xux.mongodb.net/vingodb?appName=vingodb
+JWT_SECRECT=your_key
+EMAIL=youremail@gmail.com
+APP_PASSWORD=yourapppassword email
+CLOUDINARY_CLUDNAME=deomdxayc
+CLOUDINARY_APIKEY=your apki key
+CLOUDINARY_APISECERT=your api secert
+RAZORPAY_KEY_ID=your id
+RAZORPAY_KEY_SECRET=your secret
+
+
+
+### Frontend (`frontend/.env`)
+VITE_APP_API_BASE_URL=http://localhost:8000
+VITE_FIREBASE_KEY=your firebase key
+VITE_GEOAPIKEY=your geopikey
+VITE_RAZORPAY_KEY_ID=your key
+
+
+## 🧑‍💻 Installation & Setup
+
+### 1️⃣ Clone the repository
 ```bash
-git clone <repo-url>
-cd Vingo
-```
+git clone https://github.com/VikashAlex/Vingo-Food-Delivery-MERN.git
+cd vingoMern
 
-### **2️⃣ Install Dependencies**
-
-```bash
 npm install
-cd client && npm install
-cd ../backend && npm install
-```
 
-### **3️⃣ Start Development Server**
+cd backend
+npm install
 
-```bash
-npm run dev   # backend + frontend together
-```
+cd frontend
+npm install
 
-Or manually:
 
-```bash
-cd backend && npm run dev
-cd frontend && npm run dev
-```
+go to vingoMern main folder
+npm run dev
 
----
+opne Your Project 
+http://localhost:5173
 
-## 📦 **Project Status**
+🌐 Live Demo This Project
 
-⏳ **In Progress** – New features, UI improvements & tracking module being enhanced.
+👉 https://vingofood.vercel.app
 
----
+Thank You 
+Vikash Kumar
++91 6375256614
 
-## 🤝 **Contributing**
 
-Pull requests are welcome! Feel free to open issues and suggest new features.
-
----
-
-## 🧑‍💻 **Developer**
-
-**DevloperMern** – Vikash Kumar Developer 🚀
