@@ -9,7 +9,7 @@ import { auth } from '../utils/firebase.js';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice.js';
 
-function SignUp() {
+function Signup() {
     const dispatcher = useDispatch()
     const [showPassword, setShowPassword] = useState(false)
     const [forminfo, setForminfo] = useState({
@@ -129,4 +129,4 @@ function SignUp() {
     )
 }
 
-export default SignUp
+export default Signup

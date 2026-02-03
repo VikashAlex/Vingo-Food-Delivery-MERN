@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router'
-import SignUp from './pages/Signup'
+
 import SignIn from './pages/SignIn'
 import ForgotPassword from './pages/ForgotPassword'
 import useGetCurrentUser from './hooks/useGetCurrentUser'
@@ -20,10 +20,11 @@ import useGetUpdateLocation from './hooks/useGetUpdateLocation'
 import TrackOrder from './pages/TrackOrder'
 import Shop from './pages/Shop'
 import { useEffect } from 'react'
-import { io } from 'socket.io-client'
-import { setOrders, setSocket } from './redux/userSlice'
+import { setOrders } from './redux/userSlice'
 import { socket } from './utils/helper'
 import useGetBoyMyOrders from './hooks/useGetBoyMyOrders'
+import Signup from './pages/Signup'
+
 function App() {
   useGetCurrentUser()
   useGetCurrentCity()
@@ -63,7 +64,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path='/sign-up' element={userData ? <Navigate to={'/'}></Navigate> : <SignUp />}></Route>
+      <Route path='/sign-up' element={userData ? <Navigate to={'/'}></Navigate> : <Signup />}></Route>
       <Route path='/sign-in' element={userData ? <Navigate to={'/'}></Navigate> : <SignIn />}></Route>
       <Route path='/forgot-password' element={userData ? <Navigate to={'/'}></Navigate> : <ForgotPassword />}></Route>
       <Route path='/' element={!userData ? <Navigate to={'/sign-in'}></Navigate> : <Home />}></Route>
