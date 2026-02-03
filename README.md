@@ -65,6 +65,7 @@ It supports multiple user roles, real-time order updates, authentication, and on
 ## ⚙️ Environment Variables
 
 ### Backend (`backend/.env`)
+```bash
 PORT=8000
 MONGODB_URL=mongodb+srv://yourdatabaseURL:password@vingodb.poq8xux.mongodb.net/vingodb?appName=vingodb
 JWT_SECRECT=your_key
@@ -84,7 +85,7 @@ VITE_FIREBASE_KEY=your firebase key
 VITE_GEOAPIKEY=your geopikey
 VITE_RAZORPAY_KEY_ID=your key
 
-
+```
 ## 🧑‍💻 Installation & Setup
 
 ### 1️⃣ Clone the repository
