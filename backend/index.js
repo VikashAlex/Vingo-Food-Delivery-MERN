@@ -19,7 +19,7 @@ const port = process.env.PORT || 5000;
 const io = new Server(server,{
     cors:
     {
-        origin: 'http://localhost:5173',
+        origin: 'https://vingofood.vercel.app',
         credentials: true,
         methods:['POST','GET']
     }
@@ -28,7 +28,7 @@ app.set('io',io)
 sockethandler(io) 
 app.use(cors(
     {
-        origin: 'http://localhost:5173',
+        origin: 'https://vingofood.vercel.app',
         credentials: true
     }
 ))
