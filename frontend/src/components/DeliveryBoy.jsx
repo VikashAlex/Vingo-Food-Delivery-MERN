@@ -76,7 +76,6 @@ function DeliveryBoy() {
 
   const getAcceptOrder = (assignementId) => {
     AxiosInstance.get(`/api/order/accept-order/${assignementId}`).then((res) => {
-      console.log(res.data)
       if (res.data.success) {
         getCurrentOrder()
       }
@@ -119,8 +118,8 @@ function DeliveryBoy() {
 
           <div className="max-w-sm mx-auto mt-6 p-6 bg-white rounded-2xl shadow-lg text-center">
             <h1 className='text-xl font-semibold text-gray-800 mb-2'>Today's Eraning
-              <span className="text-3xl font-bold text-green-600">{formatINRCurrency(totalEraning)}</span>
             </h1>
+              <p className="text-3xl font-bold text-green-600">{formatINRCurrency(totalEraning)}</p>
           </div>
         </div>
 
@@ -187,7 +186,6 @@ function DeliveryBoy() {
                   AvailableAssignments?.length > 0
                     ?
                     AvailableAssignments?.map((a, index) => {
-                      console.log(a)
                       return <div className="border rounded-lg p-4 flex justify-between items-center  " key={index}>
                         <div>
                           <p className="text-sm font-semibold">{a.shopName}</p>

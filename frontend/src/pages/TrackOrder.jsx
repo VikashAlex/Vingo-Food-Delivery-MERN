@@ -50,12 +50,12 @@ function TrackOrder() {
                     {shopOrder.status !== "delivered" ? (
                         shopOrder.assignedDeliveryBoy ? (
                             <div className="text-sm text-gray-700">
-                                <p className="font-semibold">
+                                <p className="font-semibold capitalize">
                                     <span>Delivery Boy Name:</span>{" "}
                                     {shopOrder.assignedDeliveryBoy.fullName}
                                 </p>
 
-                                <p className="font-semibold">
+                                <p className="font-semibold capitalize">
                                     <span>Delivery Boy contact No.:</span>{" "}
                                     {shopOrder.assignedDeliveryBoy.mobile}
                                 </p>

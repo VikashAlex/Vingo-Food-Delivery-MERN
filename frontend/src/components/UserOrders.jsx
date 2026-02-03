@@ -14,7 +14,6 @@ function UserOrders({ data }) {
     }
     const handelRatting = (itemId, ratting) => {
         AxiosInstance.post('/api/item/ratting', { itemId, ratting }).then((res) => {
-            console.log(res)
             if (res.data.success) {
                 setSelectRatting(prev => ({
                     ...prev, [itemId]: ratting

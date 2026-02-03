@@ -78,7 +78,7 @@ function OwnerOrders({ data }) {
                 ))}
             </div>
 
-            <div className='flex items-center justify-between'>
+            <div className='flex md:flex-row flex-col items-center gap-4 md:gap-0 justify-between'>
                 <p>Status: <span className='capitalize text-[#ff4d2d]'>{data?.shopOrders.status}</span></p>
                 <div className='flex items-center gap-x-3'>
                     <select onChange={(e) => setStatus(e.target.value)} className='text-[#ff4d2d] border border-[#ff4d2d] outline-0 px-2 rounded-lg py-1'>
