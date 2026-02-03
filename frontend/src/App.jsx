@@ -22,7 +22,7 @@ import { useEffect } from 'react'
 import { setOrders } from './redux/userSlice'
 import { socket } from './utils/helper'
 import useGetBoyMyOrders from './hooks/useGetBoyMyOrders'
-import Signup from './pages/SignUp'
+import Signup from './pages/Signup'
 
 function App() {
   useGetCurrentUser()
