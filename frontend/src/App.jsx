@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes } from 'react-router'
-
 import SignIn from './pages/SignIn'
 import ForgotPassword from './pages/ForgotPassword'
 import useGetCurrentUser from './hooks/useGetCurrentUser'
@@ -23,7 +22,7 @@ import { useEffect } from 'react'
 import { setOrders } from './redux/userSlice'
 import { socket } from './utils/helper'
 import useGetBoyMyOrders from './hooks/useGetBoyMyOrders'
-import Signup from './pages/Signup'
+import Signup from './pages/SignUp'
 
 function App() {
   useGetCurrentUser()
